@@ -24,11 +24,12 @@
   .tab-button {
     flex: 1; /* Ensures buttons take equal space */
     padding: 10px 20px; /* Increase padding for larger buttons */
-    background-color: #f0f0f0; /* Default background color */
+    background-color: rgba(0, 0, 0, 0.988); /* Black background with 50% opacity */
     border: none; /* Remove default button border */
     cursor: pointer; /* Pointer cursor on hover */
     transition: background-color 0.3s; /* Smooth transition for background color */
     text-align: center; /* Center text within the button */
+    color: Black; /* Ensure text is visible on dark background */
   }
   
   .tab-button.active {
@@ -80,7 +81,6 @@ label {
     cursor: pointer; /* Pointer cursor on hover */
     text-align: center; /* Center text */
     font-size: 16px; /* Font size */
-    transition: background-color 0.3s; /* Smooth transition for hover effect */
   }
   
   .button-class:hover {
