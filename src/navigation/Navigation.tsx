@@ -6,7 +6,7 @@ import { Routes, Route } from 'react-router-dom';
 import Add from '../pages/Add';
 import Home from '../pages/Home';
 import Cards from '../pages/Cards';
-import Signin from '../pages/Signin';
+import Signin from '../pages/SignIn';
 import Profile from '../pages/Profile';
 import Savings from '../pages/Savings';
 import Transactions from '../pages/Transactions';
