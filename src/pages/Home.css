@@ -73,7 +73,7 @@ label {
   
   .button-class {
     background-color: #FF8057; /* Orange background */
-    color: black; /* Black text */
+    color: white; /* Black text */
     width: 100%; /* Full width */
     padding: 10px; /* Padding for better appearance */
     border: none; /* Remove default border */
