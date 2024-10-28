@@ -8,7 +8,7 @@ const Actions = (): React.JSX.Element => (
       <Link to='/add' className='flex flex-v-center flex-h-center'>
         <span className='material-symbols-outlined'>add</span>
       </Link>
-      <span className='text-shadow'>Add money</span>
+      <span className='text-shadow'>Add Spending</span>
     </div>
     <div className='circle no-select flex flex-col flex-v-center flex-h-center'>
       <Link to='/home' className='flex flex-v-center flex-h-center'>

@@ -1,0 +1,105 @@
+/* src/pages/Home.css */
+.history-section {
+    background-color: none;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .tabs {
+    margin-bottom: 20px;
+  }
+  
+  .rectangle {
+    display: flex;
+    justify-content: center; /* Center the buttons horizontally */
+    border: 1px solid #ccc; /* Example border */
+    border-radius: 4px; /* Example border radius */
+    overflow: hidden; /* Ensures no overflow from child elements */
+    width: 100%; /* Full width of the container */
+    max-width: 600px; /* Optional: limit the maximum width */
+    margin: 0 auto; /* Center the rectangle within its parent */
+  }
+  
+  .tab-button {
+    flex: 1; /* Ensures buttons take equal space */
+    padding: 10px 20px; /* Increase padding for larger buttons */
+    background-color: #f0f0f0; /* Default background color */
+    border: none; /* Remove default button border */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth transition for background color */
+    text-align: center; /* Center text within the button */
+  }
+  
+  .tab-button.active {
+    background-color: #FF8057; /* Active tab background color */
+    color: white; /* Active tab text color */
+  }
+  
+  .history-container {
+    height: 400px;
+    overflow-y: auto;
+  }
+  
+  .payment-inputs {
+    margin-bottom: 10px;
+  }
+  
+  .disabled-input,
+  .amount-input,
+  .currency-select {
+    padding: 5px;
+    margin-right: 10px;
+  }
+  
+  .add-button {
+    padding: 5px 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .message {
+    color: red;
+    margin-top: 10px;
+  }
+
+label {
+    color: black;
+  }
+  
+  .button-class {
+    background-color: #FF8057; /* Orange background */
+    color: black; /* Black text */
+    width: 100%; /* Full width */
+    padding: 10px; /* Padding for better appearance */
+    border: none; /* Remove default border */
+    border-radius: 4px; /* Optional: rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    text-align: center; /* Center text */
+    font-size: 16px; /* Font size */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+  }
+  
+  .button-class:hover {
+    background-color: #FF8057; /* Darker orange on hover */
+  }
+  .account-balance-input {
+    width: 200px; /* Adjust width to fit more characters */
+    padding: 5px; /* Add padding for better appearance */
+    font-size: 16px; /* Adjust font size for readability */
+    border: 1px solid #ccc; /* Add border for visual clarity */
+    border-radius: 4px; /* Optional: rounded corners */
+    box-sizing: border-box; /* Include padding and border in element's total width */
+  }
+  .account-money{
+    width: 100%; /* Set to 100% to take full width of its parent */
+    max-width: 300px; /* Optional: set a maximum width */
+    padding: 10px; /* Optional: add padding for better appearance */
+    box-sizing: border-box; /* Include padding and border in element's total width */
+  }
+  .account-balance {
+    width: 100%;
+  }

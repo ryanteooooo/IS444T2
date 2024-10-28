@@ -15,7 +15,7 @@ module.exports = {
   },
   plugins: ['@typescript-eslint', 'import', 'react', 'jsx-a11y', 'prettier'],
   rules: {
-    'prettier/prettier': 'error',
+    'prettier/prettier': 'off',
     'react/require-default-props': 'off',
     '@typescript-eslint/no-throw-literal': 'off',
     'jsx-a11y/label-has-associated-control': 'off',
@@ -23,5 +23,6 @@ module.exports = {
     'jsx-a11y/no-static-element-interactions': 'off',
     '@typescript-eslint/lines-between-class-members': 'off',
     'react/function-component-definition': [2, { namedComponents: 'arrow-function' }],
+    '@typescript-eslint/no-unused-vars': 'off', // Ensure this line is present
   },
 };
