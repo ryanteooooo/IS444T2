@@ -15,11 +15,8 @@ const Profile = (): React.JSX.Element => (
     <div className='account-photo' style={{ backgroundImage: `url("images/profile.jpg")` }} />
 
     <div className='center'>
-      <h2>Cenk SARI</h2>
-      <p className='flex flex-v-center flex-h-center'>
-        @cenksari &nbsp;
-        <span className='material-symbols-outlined'>qr_code</span>
-      </p>
+      <h2>Thomas Tan</h2>
+      <p className='flex flex-v-center flex-h-center'>@thomastan</p>
     </div>
 
     <Divider />
@@ -43,27 +40,6 @@ const Profile = (): React.JSX.Element => (
           Inbox
         </div>
         <span className='notification flex flex-v-center flex-h-center'>4</span>
-      </Link>
-    </div>
-
-    <Divider />
-
-    <div className='account'>
-      <Link to='/profile' className='flex flex-v-center'>
-        <span className='material-symbols-outlined'>verified_user</span>
-        Security &amp; privacy
-      </Link>
-      <Link to='/profile' className='flex flex-v-center'>
-        <span className='material-symbols-outlined'>notifications</span>
-        Notification settings
-      </Link>
-      <Link to='/profile' className='flex flex-v-center'>
-        <span className='material-symbols-outlined'>contrast</span>
-        Appearance
-      </Link>
-      <Link to='/profile' className='flex flex-v-center'>
-        <span className='material-symbols-outlined'>grade</span>
-        New features
       </Link>
     </div>
 
