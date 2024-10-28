@@ -44,12 +44,16 @@ const Profile = (): React.JSX.Element => (
     </div>
 
     <Divider />
-
     <div className='account'>
       <Link to='/profile' className='flex flex-v-center'>
-        <span className='material-symbols-outlined'>token</span>
-        About us
+        <span className='material-symbols-outlined'>credit_card</span>
+        Add Card
       </Link>
+    </div>
+
+    <Divider />
+
+    <div className='account'>
       <Link to='/profile' className='flex flex-v-center'>
         <span className='material-symbols-outlined'>power_settings_new</span>
         Sign out
