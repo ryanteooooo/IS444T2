@@ -728,3 +728,119 @@ footer {
     margin-top: 20px;
   }
 }
+
+.balance-display {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #f5f5f5; /* Light background color */
+  border-radius: 10px;
+  margin-top: 30px;
+}
+
+.balance-display .material-symbols-outlined {
+  font-size: 36px;
+  color: #0A2353;
+  margin-right: 10px;
+}
+
+.balance-info h2 {
+  font-size: 1.2em;
+  margin: 0;
+  color: #333;
+}
+
+.balance-amount {
+  font-size: 2em;
+  font-weight: bold;
+  color: #0A2353; /* Primary color */
+  margin: 5px 0 0;
+}
+
+/* Blurred background when modal is active */
+.blur-background {
+  filter: blur(8px); /* Adjust the blur strength */
+  pointer-events: none; /* Prevent interaction with background */
+}
+
+/* Blurred background when modal is active */
+.blur-background {
+  filter: blur(8px); /* Adjust the blur strength */
+  pointer-events: none; /* Prevent interaction with background */
+}
+
+/* Modal overlay with opaque background */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7); /* Dark opaque background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Modal content with solid white background */
+.modal-content {
+  background: #ffffff; /* Solid white background */
+  padding: 20px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1001; /* Ensure it stays on top of the overlay */
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  font-size: 1.5em;
+  color: #333;
+}
+
+.modal-content ul {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+  color: #333; /* Dark color for the list items */
+}
+
+.modal-content ul li {
+  font-size: 1.1em;
+  margin-bottom: 10px;
+}
+
+.modal-content label {
+  display: block;
+  margin-top: 10px;
+  color: #333;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.modal-content button {
+  padding: 10px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.modal-content button[type='button'] {
+  background: #ccc;
+  color: #333;
+}
+
+.modal-content button[type='submit'] {
+  background: #0A2353; /* Primary color */
+  color: white;
+}
