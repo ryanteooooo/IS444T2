@@ -8,6 +8,8 @@ import Cards from './pages/Cards';
 import Profile from './pages/Profile';
 import Savings from './pages/Savings';
 import Transactions from './pages/Transactions';
+import Deals from './pages/Deals';
+import Recommendation from './pages/Recommendation';
 
 import { AuthProvider } from './AuthContext';
 
@@ -22,6 +24,8 @@ const App = (): React.JSX.Element => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/savings" element={<Savings />} />
             <Route path="/transactions" element={<Transactions />} />
+            <Route path="/deals" element={<Deals />} />
+            <Route path="/recommendation" element={<Recommendation />} />
         </Routes>
     </AuthProvider>
 );
