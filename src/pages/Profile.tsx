@@ -1,95 +1,122 @@
-import React from 'react';
-
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
 
 // components
 import Layout from '../components/Layout/Layout';
 import Divider from '../components/Divider/Divider';
 
-const Profile = (): React.JSX.Element => (
-  <Layout>
-    <Divider />
+const Profile = (): React.JSX.Element => {
+  const [showModal, setShowModal] = useState(false);
+  const [showBalanceModal, setShowBalanceModal] = useState(false); // New state for currency wallet modal
 
-    <h1 className='title'>Profile</h1>
+  const handleSignOut = () => {
+    console.log('User signed out');
+    window.location.href = 'http://localhost:3000/';
+  };
 
-    <div className='account-photo' style={{ backgroundImage: `url("images/profile.jpg")` }} />
+  const toggleModal = () => setShowModal(!showModal);
+  const toggleBalanceModal = () => setShowBalanceModal(!showBalanceModal); // Toggle function for balance modal
 
-    <div className='center'>
-      <h2>Cenk SARI</h2>
-      <p className='flex flex-v-center flex-h-center'>
-        @cenksari &nbsp;
-        <span className='material-symbols-outlined'>qr_code</span>
-      </p>
-    </div>
+  return (
+    <Layout>
+      <Divider />
 
-    <Divider />
+      <h1 className='title'>Profile</h1>
 
-    <div className='account'>
-      <Link to='/profile' className='flex flex-v-center'>
-        <span className='material-symbols-outlined'>support</span>
-        Help
-      </Link>
-      <Link to='/profile' className='flex flex-v-center'>
-        <span className='material-symbols-outlined'>account_circle</span>
-        Account
-      </Link>
-      <Link to='/profile' className='flex flex-v-center'>
-        <span className='material-symbols-outlined'>school</span>
-        Learn
-      </Link>
-      <Link to='/profile' className='flex flex-v-center flex-space-between'>
-        <div className='flex flex-v-center flex-h-center'>
-          <span className='material-symbols-outlined'>inbox</span>
-          Inbox
+      <div className='account-photo' style={{ backgroundImage: `url("images/profile.jpg")` }} />
+
+      <div className='center'>
+        <h2>Thomas Tan</h2>
+        <p className='flex flex-v-center flex-h-center'>@thomastan</p>
+      </div>
+
+      {/* Current Balance section with onClick to show currency wallets */}
+      <div className='balance-display' onClick={toggleBalanceModal} style={{ cursor: 'pointer' }}>
+        <span className='material-symbols-outlined'>account_balance_wallet</span>
+        <div className='balance-info'>
+          <h2>Current Balance</h2>
+          <h1 className='balance-amount'>$SGD 650.80</h1> {/* Mock value */}
         </div>
-        <span className='notification flex flex-v-center flex-h-center'>4</span>
-      </Link>
-    </div>
+      </div>
 
-    <Divider />
+      <Divider />
 
-    <div className='account'>
-      <Link to='/profile' className='flex flex-v-center'>
-        <span className='material-symbols-outlined'>verified_user</span>
-        Security &amp; privacy
-      </Link>
-      <Link to='/profile' className='flex flex-v-center'>
-        <span className='material-symbols-outlined'>notifications</span>
-        Notification settings
-      </Link>
-      <Link to='/profile' className='flex flex-v-center'>
-        <span className='material-symbols-outlined'>contrast</span>
-        Appearance
-      </Link>
-      <Link to='/profile' className='flex flex-v-center'>
-        <span className='material-symbols-outlined'>grade</span>
-        New features
-      </Link>
-    </div>
+      <div className='account'>
+        <div
+          onClick={toggleModal}
+          className='flex flex-v-center account-link'
+          style={{ cursor: 'pointer' }}
+        >
+          <span className='material-symbols-outlined'>credit_card</span>
+          Add Card
+        </div>
+      </div>
 
-    <Divider />
+      <Divider />
 
-    <div className='account'>
-      <Link to='/profile' className='flex flex-v-center'>
-        <span className='material-symbols-outlined'>token</span>
-        About us
-      </Link>
-      <Link to='/profile' className='flex flex-v-center'>
-        <span className='material-symbols-outlined'>power_settings_new</span>
-        Sign out
-      </Link>
-    </div>
+      <div className='account'>
+        <div
+          onClick={handleSignOut}
+          className='flex flex-v-center account-link'
+          style={{ cursor: 'pointer' }}
+        >
+          <span className='material-symbols-outlined'>power_settings_new</span>
+          Sign Out
+        </div>
+      </div>
 
-    <Divider />
+      <Divider />
 
-    <footer className='center no-select'>
-      v.1.0.12
-      <br />
-      Banking Ltd.
-    </footer>
+      <footer className='center no-select'>
+        v.1.0.12
+        <br />
+        Banking Ltd.
+      </footer>
 
-    <Divider />
-  </Layout>
-);
+      <Divider />
+
+      {/* Add Card Modal */}
+      {showModal && (
+        <div className='modal-overlay'>
+          <div className='modal-content'>
+            <h2>Add Bank Card</h2>
+            <form>
+              <label>Card Number:</label>
+              <input type='text' placeholder='1234 5678 9012 3456' />
+
+              <label>Expiry Date:</label>
+              <input type='text' placeholder='MM/YY' />
+
+              <label>CVV:</label>
+              <input type='text' placeholder='123' />
+
+              <button type='button' onClick={toggleModal}>
+                Close
+              </button>
+              <button type='submit'>Add Card</button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Currency Wallet Modal */}
+      {showBalanceModal && (
+        <div className='modal-overlay'>
+          <div className='modal-content'>
+            <h2>Your Currency Wallets</h2>
+            <ul>
+              <li>EUR Wallet: €650.80</li>
+              <li>GBP Wallet: £550.60</li>
+              <li>USD Wallet: $700.50</li>
+              {/* Add more wallets as needed */}
+            </ul>
+            <button type='button' onClick={toggleBalanceModal}>
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+    </Layout>
+  );
+};
 
 export default Profile;
