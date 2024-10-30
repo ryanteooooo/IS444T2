@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import './Exchange.css'; // Import the CSS file for styling
 
 // Import authorization and API key from a configuration file
-import { API_KEY, AUTH_HEADER } from '../apiConfig';
+import { API_KEY, AUTH_HEADER } from '../../apiConfig';
 
 // Components
-import Layout from '../components/Layout/Layout';
-import Actions from '../components/Actions/Actions';
-import Divider from '../components/Divider/Divider';
+import Layout from '../../components/Layout/Layout';
+import Actions from '../../components/Actions/Actions';
+import Divider from '../../components/Divider/Divider';
 
 // Main component for the Exchange section
 const ExchangeSection = (): React.JSX.Element => {

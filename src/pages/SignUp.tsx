@@ -44,7 +44,7 @@ const SignUp = (): React.JSX.Element => {
                     <form method='post' action='/' className='form' noValidate onSubmit={handleSubmit}>
                         <div className='form-line'>
                             <div className='label-line'>
-                                <label htmlFor='name' className='text-shadow'>
+                                <label htmlFor='name' className='text-shadow' style={{ color: 'white' }}>
                                     Name
                                 </label>
                             </div>
@@ -60,7 +60,7 @@ const SignUp = (): React.JSX.Element => {
                         </div>
                         <div className='form-line'>
                             <div className='label-line'>
-                                <label htmlFor='email' className='text-shadow'>
+                                <label htmlFor='email' className='text-shadow' style={{ color: 'white' }}>
                                     Email
                                 </label>
                             </div>
@@ -76,7 +76,7 @@ const SignUp = (): React.JSX.Element => {
                         </div>
                         <div className='form-line'>
                             <div className='label-line'>
-                                <label htmlFor='password' className='text-shadow'>
+                                <label htmlFor='password' className='text-shadow' style={{ color: 'white' }}>
                                     Password
                                 </label>
                             </div>

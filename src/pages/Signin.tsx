@@ -57,13 +57,13 @@ const Signin = (): React.JSX.Element => {
       <div className='flex flex-v-center flex-h-center h-full'>
         <div className='bg' />
         <div className='text'>
-          <h1 className='text-shadow'>Hello! 👋</h1>
-          <p className='text-shadow'>Please sign in to your account or sign up a new account.</p>
+          <h1 className='text-shadow'>Wlecome 👋</h1>
+          <p className='text-shadow'>Please sign in to your account or create a new account.</p>
 
           <form method='post' action='/' className='form' noValidate onSubmit={handleSubmit}>
             <div className='form-line'>
               <div className='label-line'>
-                <label htmlFor='email' className='text-shadow'>
+                <label htmlFor='email' className='text-shadow' style={{ color: 'white' }}>
                   Email
                 </label>
               </div>
@@ -78,7 +78,7 @@ const Signin = (): React.JSX.Element => {
             </div>
             <div className='form-line'>
               <div className='label-line flex flex-h-center flex-space-between'>
-                <label htmlFor='password' className='text-shadow'>
+                <label htmlFor='password' className='text-shadow' style={{ color: 'white' }}>
                   Password
                 </label>
                 <span className='text-shadow'>

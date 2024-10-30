@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
 // components
-import Layout from '../components/Layout/Layout';
-import Actions from '../components/Actions/Actions';
-import Widgets from '../components/Widgets/Widgets';
-import Divider from '../components/Divider/Divider';
-import Circle from '../components/Circle/Circle';
+import Layout from '../../components/Layout/Layout';
+import Actions from '../../components/Actions/Actions';
+import Widgets from '../../components/Widgets/Widgets';
+import Divider from '../../components/Divider/Divider';
+import Circle from '../../components/Circle/Circle';
 import './Home.css'; // Add this import statement
 
 // interfaces

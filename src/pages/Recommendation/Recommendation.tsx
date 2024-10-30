@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ActivityCard from '../../components/ActivityCard/ActivityCard';
 import './Recommendation.css';
 
+import Actions from '../../components/Actions/Actions';
 import Layout from '../../components/Layout/Layout';
 import Divider from '../../components/Divider/Divider';
 
@@ -136,6 +137,11 @@ const Recommendation: React.FC = () => {
     return (
         <Layout>
             <Divider />
+
+            <Actions />
+
+            <Divider />
+            
             <h1 className="title no-select">Recommendations For You</h1>
             <div className="activity-cards-container">
                 {currentActivities.map((activity) => (
