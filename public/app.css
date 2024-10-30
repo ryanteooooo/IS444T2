@@ -16,7 +16,9 @@ html {
   height: 100%;
   color: #ffffff;
   font-family: 'Poppins', sans-serif;
-  background-color: #0A2353; /* Change this color if you prefer another one from the palette */
+  background: linear-gradient(130deg, #5B58EB, #1127C0, #BB63FF); /* Change this color if you prefer another one from the palette */
+  background-size: cover; 
+  background-attachment: fixed; 
 }
 
 body,
