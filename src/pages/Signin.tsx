@@ -57,7 +57,7 @@ const Signin = (): React.JSX.Element => {
       <div className='flex flex-v-center flex-h-center h-full'>
         <div className='bg' />
         <div className='text'>
-          <h1 className='text-shadow'>Wlecome 👋</h1>
+          <h1 className='text-shadow'>Welcome 👋</h1>
           <p className='text-shadow'>Please sign in to your account or create a new account.</p>
 
           <form method='post' action='/' className='form' noValidate onSubmit={handleSubmit}>
