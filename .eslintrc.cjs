@@ -15,7 +15,7 @@ module.exports = {
   },
   plugins: ['@typescript-eslint', 'import', 'react', 'jsx-a11y', 'prettier'],
   rules: {
-    'prettier/prettier': 'warn',
+    'prettier/prettier': 'off',
     'react/require-default-props': 'off',
     '@typescript-eslint/no-throw-literal': 'off',
     '@typescript-eslint/no-unused-vars': 'warn', // Unused vars as warnings
