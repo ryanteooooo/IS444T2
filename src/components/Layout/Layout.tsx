@@ -13,7 +13,7 @@ const Layout = ({ children, className }: IProps): React.JSX.Element => (
   <>
     <div className={`bg ${className}`} /> {/* Apply className to the background div */}
     <div className={`content flex flex-col ${className}`}>
-      <div className='container'>
+      <div className='container fixed-width'> {/* Added a fixed width class */}
         <Header />
         {children}
       </div>

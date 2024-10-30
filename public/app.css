@@ -282,8 +282,8 @@ header .header-button span {
   padding: 10px;
   font-weight: 500;
   border-radius: 5px;
-  background-color: #56E1E9;
-  border: 2px solid #56E1E9;
+  background-color: #FF8057;
+  border: 2px solid #FF8057;
 }
 
 .button.disabled {
@@ -845,4 +845,10 @@ footer {
 .modal-content button[type='submit'] {
   background: #0A2353; /* Primary color */
   color: white;
+}
+
+.container.fixed-width {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
