@@ -149,10 +149,6 @@ const Home = (): React.JSX.Element => (
     <History />
 
     <Divider />
-
-    <Widgets />
-
-    <Divider />
   </Layout>
 );
 
