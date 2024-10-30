@@ -1,0 +1,55 @@
+.activity-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    max-width: 400px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    transition: box-shadow 0.3s ease-in-out;
+    background-color: rgba(255, 255, 255, 0.5);
+    margin: 20px;
+}
+
+.activity-card:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.activity-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.activity-content {
+    padding: 16px;
+}
+
+.activity-title {
+    margin: 0 0 8px;
+    font-size: 1.5em;
+}
+
+.activity-description {
+    font-size: 0.9em;
+    color: #000000;
+}
+
+.activity-info {
+    margin: 12px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.activity-rating,
+.activity-price {
+    font-weight: bold;
+}
+
+.activity-link {
+    text-decoration: none;
+    color: #56E1E9;
+    font-weight: bold;
+}
+
+.activity-link:hover {
+    text-decoration: underline;
+}

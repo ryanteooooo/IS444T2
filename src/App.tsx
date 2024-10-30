@@ -9,7 +9,7 @@ import Profile from './pages/Profile';
 import Savings from './pages/Savings';
 import Transactions from './pages/Transactions';
 import Deals from './pages/Deals';
-import Recommendation from './pages/Recommendation';
+import Recommendation from './pages/Recommendation/Recommendation';
 import Exchange from './pages/Exchange';
 
 import { AuthProvider } from './AuthContext';
