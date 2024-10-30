@@ -7,7 +7,7 @@ import { useAuth } from '../AuthContext'; // Import the Auth context
 import Input from '../components/Form/Input';
 import Button from '../components/Form/Button';
 
-const SignIn = (): React.JSX.Element => {
+const Signin = (): React.JSX.Element => {
   const [credentials, setCredentials] = useState({ email: '', password: '' });
   const { setAccountID } = useAuth();
   const navigate = useNavigate();
@@ -110,4 +110,4 @@ const SignIn = (): React.JSX.Element => {
   );
 };
 
-export default SignIn;
+export default Signin;
