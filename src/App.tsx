@@ -13,21 +13,24 @@ import Recommendation from './pages/Recommendation/Recommendation';
 import Exchange from './pages/Exchange/Exchange';
 
 import { AuthProvider } from './AuthContext';
+import ProtectedRoute from './ProtectedRoute';
 
 const App = (): React.JSX.Element => (
   <AuthProvider>
     <Routes>
       <Route path='/' element={<Signin />} />
       <Route path='/signup' element={<SignUp />} />
-      <Route path='/home' element={<Home />} />
-      <Route path='/add' element={<Add />} />
-      <Route path='/cards' element={<Cards />} />
-      <Route path='/profile' element={<Profile />} />
-      <Route path='/savings' element={<Savings />} />
-      <Route path='/transactions' element={<Transactions />} />
-      <Route path='/deals' element={<Deals />} />
-      <Route path='/recommendation' element={<Recommendation />} />
-      <Route path='/exchange' element={<Exchange />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path='/home' element={<Home />} />
+        <Route path='/add' element={<Add />} />
+        <Route path='/cards' element={<Cards />} />
+        <Route path='/profile' element={<Profile />} />
+        <Route path='/savings' element={<Savings />} />
+        <Route path='/transactions' element={<Transactions />} />
+        <Route path='/deals' element={<Deals />} />
+        <Route path='/recommendation' element={<Recommendation />} />
+        <Route path='/exchange' element={<Exchange />} />
+      </Route>
     </Routes>
   </AuthProvider>
 );
