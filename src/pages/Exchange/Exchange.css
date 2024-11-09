@@ -1,91 +1,52 @@
 .exchange-section {
-    background-color: none;
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 500px;
-  }
-  
-  .tabs {
-    margin-bottom: 20px;
-  }
-  
-  .rectangle {
-    display: flex;
-    justify-content: center;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    overflow: hidden;
-    width: 100%;
-    margin: 0 auto;
-  }
-  
-  .tab-button {
-    flex: 1;
-    padding: 10px 20px;
-    background-color: #f0f0f0;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    text-align: center;
-  }
-  
-  .tab-button.active {
-    background-color: #FF8057;
-    color: white;
-  }
-  
-  .exchange-container {
-    height: 100%;
-    overflow-y: auto;
-  }
-  
-  .exchange-tab {
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
-    color: white;
-    font-size: 0.9rem;
-  }
-  
-  .exchange-inputs {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .currency-select,
-  .rate-input {
-    padding: 5px;
-    margin-right: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 100%;
-    box-sizing: border-box;
-  }
-  
-  .submit-button {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-    padding: 10px;
-    width: 100%;
-    text-align: center;
-    margin-top: 10px;
-  }
-  
-  .submit-button:hover {
-    background-color: #218838;
-  }
-  .exchange-tab {
+  background-color: none;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 500px;
+}
+
+.tabs {
+  margin-bottom: 20px;
+}
+
+.rectangle {
+  display: flex;
+  justify-content: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow: hidden;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.tab-button {
+  flex: 1;
+  padding: 10px 20px;
+  background-color: #f0f0f0;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  text-align: center;
+}
+
+.tab-button.active {
+  background-color: #FF8057;
+  color: white;
+}
+
+.exchange-container {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.exchange-tab {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+  background: rgba(255, 255, 255, 0.5);
   color: white;
+  font-size: 0.9rem;
 }
 
 .exchange-inputs {
@@ -94,34 +55,46 @@
   gap: 10px;
 }
 
-.currency-row,
-.amount-row {
+.row {
   display: flex;
-  flex-direction: column; /* Arrange elements vertically */
-  align-items: flex-start; /* Align elements to the left */
-  gap: 5px; /* Add some spacing between the label and the input */
-  margin-bottom: 15px; /* Optional: Add spacing between rows */
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.s-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  color: #ccc;
+  font-size: 0.8rem;
+  height: 10px; /* Adjusted height */
+  overflow: hidden; /* Manage overflow */
+  align-items: center; /* Center content vertically */
 }
 
-.currency-row label,
-.amount-row label {
-  color: white; /* Change label color to white */
+.col {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Ensure content is spaced evenly */
 }
 
 .currency-select,
+.rate-input-edit,
 .amount-input {
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 100%; /* Use full width of container */
-  box-sizing: border-box;
-  background-color: #f0f0f0;
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid white;
+  color: white;
+  font-size: 16px;
+  width: 100%;
 }
 
-.live-rate,
 .converted-amount {
-  font-weight: bold;
+  color: #ccc;
+  font-size: 0.8rem;
 }
+
+
 
 .submit-button {
   background-color: #FF8057;

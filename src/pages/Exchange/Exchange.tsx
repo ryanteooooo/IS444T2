@@ -1,173 +1,89 @@
-import React, { useState, useEffect } from 'react';
-import './Exchange.css'; // Import the CSS file for styling
-
-// Import authorization and API key from a configuration file
-import { API_KEY, AUTH_HEADER } from '../../apiConfig';
-
-// Components
+import React, { useState, useEffect, useCallback } from 'react';
+import './Exchange.css';
+import { useAuth } from '../../AuthContext';
+import { AUTH_HEADER } from '../../apiConfig';
 import Layout from '../../components/Layout/Layout';
 import Actions from '../../components/Actions/Actions';
 import Divider from '../../components/Divider/Divider';
 
-// Main component for the Exchange section
 const ExchangeSection = (): React.JSX.Element => {
-  // State variables to manage the active tab, exchange rate, selected currency, transactions, and limit orders
+  const { accountID: accountId } = useAuth();
   const [activeTab, setActiveTab] = useState<'exchange' | 'limit' | 'history'>('exchange');
+  const [liveRate, setLiveRate] = useState<number>(0); // Separate state for live rate
   const [exchangeRate, setExchangeRate] = useState<number>(0);
   const [selectedCurrency, setSelectedCurrency] = useState<string>('');
   const [transactions, setTransactions] = useState<any[]>([]);
   const [limitOrders, setLimitOrders] = useState<any[]>([]);
-  const [paymentAmount, setPaymentAmount] = useState<number>(0); // Add state for payment amount
+  const [paymentAmount, setPaymentAmount] = useState<number>(0);
+  const [balance, setBalance] = useState<string>('N/A');
 
-  // Fetch the current exchange rate from the server
-  const fetchExchangeRate = async () => {
+  const currencies = ['USD', 'MYR', 'EUR', 'JPY', 'GBP', 'AUD', 'CAD', 'CHF', 'CNY', 'THB'];
+
+  const fetchBalance = useCallback(async (currency: string) => {
     try {
-      const response = await fetch('/exchange_rate', {
+      const response = await fetch(`https://personal-6hjam0f0.outsystemscloud.com/ExchangeCurrency/rest/CurrencyBankAPI/GetSingleAccountCurrencyNew?AccountId=${accountId}`);
+      const data = await response.json();
+      console.log('Balance data:', data);
+      const currencyData = data.Currencies.find((c: any) => c.CurrencyCode === currency);
+      setBalance(currencyData ? currencyData.Amount.toFixed(2) : 'N/A');
+    } catch (error) {
+      console.error('Error fetching balance:', error);
+    }
+  }, [accountId]);
+
+  const fetchLiveRate = useCallback(async (currency: string) => {
+    try {
+      const response = await fetch(`https://smuedu-dev.outsystemsenterprise.com/gateway/rest/marketdata/exchange_rate?baseCurrency=SGD&quoteCurrency=${currency}`, {
         headers: {
           Authorization: AUTH_HEADER,
-          'x-api-key': API_KEY,
         },
       });
       const data = await response.json();
-      console.log('Fetched exchange rate:', data);
-      setExchangeRate(data.rate);
+      console.log('Live rate data:', data);
+      setLiveRate(data.rate);
+      setExchangeRate(data.rate); // Initialize exchange rate with live rate
     } catch (error) {
-      console.error('Error fetching exchange rate:', error);
+      console.error('Error fetching live rate:', error);
     }
-  };
+  }, []);
 
-  // Fetch the user's limit orders from the server
-  const fetchLimitOrders = async () => {
-    try {
-      const response = await fetch('/GetIndividualRateLock', {
-        headers: {
-          Authorization: AUTH_HEADER,
-          'x-api-key': API_KEY,
-        },
-      });
-      const data = await response.json();
-      console.log('Fetched limit orders:', data);
-      setLimitOrders(data.orders);
-    } catch (error) {
-      console.error('Error fetching limit orders:', error);
+  useEffect(() => {
+    if (selectedCurrency) {
+      fetchBalance(selectedCurrency);
+      fetchLiveRate(selectedCurrency);
     }
-  };
+  }, [selectedCurrency, fetchBalance, fetchLiveRate]);
 
-  // Fetch the user's transaction history from the server
-  const fetchTransactionHistory = async () => {
-    try {
-      const response = await fetch('/GetAllTransactions', {
-        headers: {
-          Authorization: AUTH_HEADER,
-          'x-api-key': API_KEY,
-        },
-      });
-      const data = await response.json();
-      console.log('Fetched transaction history:', data);
-      setTransactions(data.transactions);
-    } catch (error) {
-      console.error('Error fetching transaction history:', error);
-    }
-  };
-
-  // Handle submission of a live exchange
   const handleLiveExchangeSubmit = async () => {
     try {
-      const response = await fetch('/AddAccountNewCurrency', {
+      console.log('Submitting exchange:', {
+        AccountId: accountId,
+        Currency: selectedCurrency,
+        X_Rate: exchangeRate,
+        Amount: paymentAmount,
+      });
+      const response = await fetch('https://personal-6hjam0f0.outsystemscloud.com/NewExchangeCurrencyLocker/rest/RateLockAPI/CompositeNewRateLock', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: AUTH_HEADER,
-          'x-api-key': API_KEY,
         },
         body: JSON.stringify({
-          currency: selectedCurrency,
-          rate: exchangeRate,
+          AccountId: accountId,
+          Currency: selectedCurrency,
+          X_Rate: exchangeRate,
+          Amount: paymentAmount,
         }),
       });
       const data = await response.json();
-      console.log('Live exchange submitted:', data);
+      console.log('Exchange submitted:', data);
     } catch (error) {
-      console.error('Error submitting live exchange:', error);
+      console.error('Error submitting exchange:', error);
     }
   };
-
-  // Handle submission of a rate limit order
-  const handleRateLimitSubmit = async () => {
-    try {
-      const response = await fetch('/CreateRateLock', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: AUTH_HEADER,
-          'x-api-key': API_KEY,
-        },
-        body: JSON.stringify({
-          currency: selectedCurrency,
-          rate: exchangeRate,
-        }),
-      });
-      const data = await response.json();
-      console.log('Rate limit submitted:', data);
-    } catch (error) {
-      console.error('Error submitting rate limit:', error);
-    }
-  };
-
-  // Handle deletion of a limit order
-  const handleDeleteOrder = async (orderId: string) => {
-    try {
-      const response = await fetch(`/DeleteRateLock/${orderId}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: AUTH_HEADER,
-          'x-api-key': API_KEY,
-        },
-      });
-      const data = await response.json();
-      console.log('Order deleted:', data);
-      fetchLimitOrders(); // Refresh the list after deletion
-    } catch (error) {
-      console.error('Error deleting order:', error);
-    }
-  };
-  
-  // Handle updating of a limit order
-  const handleUpdateOrder = async (orderId: string) => {
-    try {
-      const response = await fetch(`/UpdateRateLockStatus/${orderId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: AUTH_HEADER,
-          'x-api-key': API_KEY,
-        },
-        body: JSON.stringify({
-          // Include necessary data for update
-        }),
-      });
-      const data = await response.json();
-      console.log('Order updated:', data);
-      fetchLimitOrders(); // Refresh the list after update
-    } catch (error) {
-      console.error('Error updating order:', error);
-    }
-  };
-
-  // Effect hook to fetch data based on the active tab
-  useEffect(() => {
-    if (activeTab === 'exchange') {
-      fetchExchangeRate();
-    } else if (activeTab === 'limit') {
-      fetchLimitOrders();
-    } else if (activeTab === 'history') {
-      fetchTransactionHistory();
-    }
-  }, [activeTab]);
 
   return (
     <div className='exchange-section'>
-      {/* Tab navigation */}
       <div className='tabs flex flex-space-between'>
         <div className='rectangle no-select flex flex-space-between'>
           <button
@@ -176,13 +92,6 @@ const ExchangeSection = (): React.JSX.Element => {
             onClick={() => setActiveTab('exchange')}
           >
             Exchange
-          </button>
-          <button
-            type='button'
-            className={`tab-button ${activeTab === 'limit' ? 'active' : ''}`}
-            onClick={() => setActiveTab('limit')}
-          >
-            Limit
           </button>
           <button
             type='button'
@@ -196,59 +105,67 @@ const ExchangeSection = (): React.JSX.Element => {
 
       <Divider />
 
-      {/* Content for each tab */}
       <div className='exchange-container'>
         {activeTab === 'exchange' && (
-        <div className='exchange-tab'>
-            <h2>New Exchange</h2>
+          <div className='exchange-tab'>
             <div className='exchange-inputs'>
-            <div className='currency-row'>
-                <label>SGD to:</label>
-                <select
-                value={selectedCurrency}
-                onChange={(e) => setSelectedCurrency(e.target.value)}
-                className='currency-select'
-                >
-                <option value=''>Select currency</option>
-                {/* Populate with available currencies */}
-                </select>
-                <span className='live-rate'>Live Rate: {exchangeRate}</span>
+              <div className='row'>
+                <div className='col'>Select Currency:</div>
+                <div className='col'>
+                  <select
+                    value={selectedCurrency}
+                    onChange={(e) => setSelectedCurrency(e.target.value)}
+                    className='currency-select'
+                  >
+                    <option value=''>Select currency</option>
+                    {currencies.map((currency) => (
+                      <option key={currency} value={currency}>
+                        {currency}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className='s-row'>
+                <div className='col balance'>Balance: {balance}</div>
+                <div className='col live-rate'>Live Rate: {liveRate}</div>
+              </div>
+              <div className='row' />
+              <div className='row'>
+                <div className='col'>Exchange Rate:</div>
+                <div className='col'>
+                  <input
+                    type='number'
+                    value={exchangeRate}
+                    onChange={(e) => setExchangeRate(Number(e.target.value))}
+                    className='rate-input-edit'
+                  />
+                </div>
+              </div>
+              <div className='row'>
+                <div className='col'>Change Amount:</div>
+                <div className='col'>
+                  <input
+                    type='number'
+                    value={paymentAmount}
+                    onChange={(e) => setPaymentAmount(Number(e.target.value))}
+                    className='amount-input'
+                  />
+                </div>
+              </div>
+              <div className='row' />
+              <div className='row'>
+                <div className='col'>Estimated Amount:</div>
+                <div className='col'>
+                  <span className='converted-amount'>
+                    {(paymentAmount * exchangeRate).toFixed(2)}
+                  </span>
+                </div>
+              </div>
+              <button type='button' onClick={handleLiveExchangeSubmit} className='submit-button'>
+                Submit
+              </button>
             </div>
-            <div className='amount-row'>
-                <label>Change Amount:</label>
-                <input
-                type='number'
-                value={paymentAmount}
-                onChange={(e) => setPaymentAmount(Number(e.target.value))}
-                className='amount-input'
-                />
-                <span>=</span>
-                <span className='converted-amount'>
-                {paymentAmount * exchangeRate || 0}
-                </span>
-            </div>
-            <button type='button' onClick={handleLiveExchangeSubmit} className='submit-button'>
-                Submit Live Exchange
-            </button>
-            <button type='button' onClick={handleRateLimitSubmit} className='submit-button'>
-                Submit Rate Limit
-            </button>
-            </div>
-        </div>
-        )}
-
-        {activeTab === 'limit' && (
-          <div className='limit-tab'>
-            <h2>Exchange Limit Orders</h2>
-            <ul>
-              {limitOrders.map((order) => (
-                <li key={order.id}>
-                  {order.currency} at {order.rate}
-                  <button type='button' onClick={() => handleDeleteOrder(order.id)}>Delete</button>
-                  <button type='button' onClick={() => handleUpdateOrder(order.id)}>Update</button>
-                </li>
-              ))}
-            </ul>
           </div>
         )}
 
@@ -269,7 +186,6 @@ const ExchangeSection = (): React.JSX.Element => {
   );
 };
 
-// Main Exchange component that includes the layout and actions
 const Exchange = (): React.JSX.Element => (
   <Layout>
     <Divider />
