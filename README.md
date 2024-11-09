@@ -17,4 +17,4 @@ npm start
 ```
 
 ## Backend 
-<a href="https://www.outsystems.com/"><img src="https://en.wikipedia.org/wiki/OutSystems#/media/File:OS-logo-color_500x108.png" alt="OutSystems" height="40"/></a>
+<a href="https://www.outsystems.com/"><img src="https://upload.wikimedia.org/wikipedia/commons/8/82/OS-logo-color_500x108.png" alt="OutSystems" height="40"/></a>
