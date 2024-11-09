@@ -1,4 +1,3 @@
-// AuthContext.tsx
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 interface AuthContextType {
@@ -10,6 +9,7 @@ interface AuthContextType {
     setUserEmail: React.Dispatch<React.SetStateAction<string | null>>;
     userTbankAccountId: string | null;
     setTbankAccountId: React.Dispatch<React.SetStateAction<string | null>>;
+    logout: () => void; // Add logout function
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,8 +20,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [userEmail, setUserEmail] = useState<string | null>(null);
     const [userTbankAccountId, setTbankAccountId] = useState<string | null>(null);
 
+    const logout = () => {
+        setAccountID(null);
+        setUserName(null);
+        setUserEmail(null);
+        setTbankAccountId(null);
+    };
+
     const value = React.useMemo(
-        () => ({ accountID, setAccountID, userName, setUserName, userEmail, setUserEmail, userTbankAccountId, setTbankAccountId }),
+        () => ({ accountID, setAccountID, userName, setUserName, userEmail, setUserEmail, userTbankAccountId, setTbankAccountId, logout }),
         [accountID, userName, userEmail, userTbankAccountId]
     );
 
