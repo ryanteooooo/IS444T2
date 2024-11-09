@@ -174,44 +174,30 @@ label {
 /* payment tab */
 .payment-section {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: rgba(255, 255, 255, 0.5); /* Example background color */
+  flex-direction: column;
+  background-color: rgba(255, 255, 255, 0.5);
   padding: 20px;
   border-radius: 8px;
   color: white;
-  height: 200px;
 }
 
-.currency-selection {
+.payment-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two equal columns */
+  gap: 10px; /* Space between columns */
+}
+
+.grid-row {
+  display: contents; /* Allow grid items to span full width */
+}
+
+.grid-col {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  justify-content: center;
 }
 
-.currency-dropdown {
-  background-color: transparent;
-  border: none;
-  color: white;
-  font-size: 16px;
-  margin-bottom: 5px;
-  cursor: pointer;
-}
-
-.balance-info {
-  font-size: 12px;
-  color: #d3d3d3; /* Lighter color for balance info */
-  margin-left: 5px;
-}
-
-.amount-section,
-.recipient-section {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  margin-top: 5px;
-}
-
+.currency-dropdown,
 .amountInput,
 .recipientInput {
   background-color: transparent;
@@ -219,37 +205,43 @@ label {
   border-bottom: 1px solid white;
   color: white;
   font-size: 16px;
-  width: 150px;
+  width: 100%;
 }
 
-.amount-section label,
-.recipient-section label {
-  font-size: 16px;
-  margin-bottom: 5px;
+.balance-info {
+  font-size: 12px;
+  color: #d3d3d3;
+  margin-top: 5px;
+}
+
+.submitButton {
+  width: 100%;
+  margin-top: 20px;
 }
 
 .add-buttons {
   display: flex;
-  justify-content: center; /* Center the button horizontally */
-  align-items: center; /* Center the button vertically, if needed */
-  margin-top: 0px; /* Optional: add margin for spacing */
+  justify-content: center;
+  align-items: center;
+  margin-top: 0px;
 }
 
 .LocalButton {
-  width: 350px; /* Set the width to 120px */
-  height: 50px; /* Set a fixed height */
+  width: 350px;
+  height: 50px;
   margin: 0 5px;
-  background-color: rgba(0, 0, 0, 0.2); /* Translucent background */
+  background-color: rgba(0, 0, 0, 0.2);
   color: white;
   border: none;
-  border-radius: 10px; /* Add a small border-radius for slightly curved corners */
+  border-radius: 10px;
   cursor: pointer;
-  transition: background-color 0.3s; /* Smooth transition for background color */
+  transition: background-color 0.3s;
 }
 
 .LocalButton:hover {
-  background-color: #56E1E9; /* Hover background color */
+  background-color: #56E1E9;
 }
+
 
 
 /* blur function */

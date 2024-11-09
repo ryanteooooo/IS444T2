@@ -8,7 +8,7 @@ import Divider from '../../components/Divider/Divider';
 
 const ExchangeSection = (): React.JSX.Element => {
   const { accountID: accountId } = useAuth();
-  const [activeTab, setActiveTab] = useState<'exchange' | 'limit' | 'history'>('exchange');
+  const [activeTab, setActiveTab] = useState<'exchange' | 'limit' | 'status'>('exchange');
   const [liveRate, setLiveRate] = useState<number>(0);
   const [exchangeRate, setExchangeRate] = useState<number>(0);
   const [selectedCurrency, setSelectedCurrency] = useState<string>('');
@@ -18,8 +18,9 @@ const ExchangeSection = (): React.JSX.Element => {
   const [balance, setBalance] = useState<string>('N/A');
   const [message, setMessage] = useState<string>(''); // State for output message
   const [isLoading, setIsLoading] = useState<boolean>(false); // State for loading animation
+  const [rateLocks, setRateLocks] = useState<any[]>([]); // State for rate lock transactions
 
-  const currencies = ['USD', 'MYR', 'EUR', 'JPY', 'GBP', 'AUD', 'CAD', 'CHF', 'CNY', 'THB'];
+  const currencies = ['USD', 'EUR', 'GBP', 'THB'];
 
   const fetchBalance = useCallback(async (currency: string) => {
     try {
@@ -122,6 +123,18 @@ const ExchangeSection = (): React.JSX.Element => {
     }
   };
 
+  useEffect(() => {
+    if (activeTab === 'status') {
+      fetch('https://personal-6hjam0f0.outsystemscloud.com/ExchangeCurrency/rest/RateAPI/GetIndividualRateLock?AccountId=13')
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('Fetched rate locks:', data);
+          setRateLocks(Array.isArray(data) ? data : []); // Set to an empty array if data is not an array
+        })
+        .catch((error) => console.error('Error fetching rate locks:', error));
+    }
+  }, [activeTab]); // Fetch rate locks when the status tab is active
+
   return (
     <div className={`exchange-section ${isLoading ? 'blur' : ''}`}>
       {isLoading && (
@@ -142,10 +155,10 @@ const ExchangeSection = (): React.JSX.Element => {
           </button>
           <button
             type='button'
-            className={`tab-button ${activeTab === 'history' ? 'active' : ''}`}
-            onClick={() => setActiveTab('history')}
+            className={`tab-button ${activeTab === 'status' ? 'active' : ''}`}
+            onClick={() => setActiveTab('status')}
           >
-            History
+            Status
           </button>
         </div>
       </div>
@@ -156,8 +169,8 @@ const ExchangeSection = (): React.JSX.Element => {
         {activeTab === 'exchange' && (
           <div className='exchange-tab'>
             <div className='exchange-inputs'>
-            <div className='row' />
-            <div className='row' />
+              <div className='row' />
+              <div className='row' />
               <div className='row'>
                 <div className='col'>Select Currency:</div>
                 <div className='col'>
@@ -224,13 +237,44 @@ const ExchangeSection = (): React.JSX.Element => {
           </div>
         )}
 
-        {activeTab === 'history' && (
-          <div className='history-tab'>
-            <h2>Exchange History</h2>
+        {activeTab === 'status' && (
+          <div className='status-tab'>
             <ul>
-              {transactions.map((transaction) => (
-                <li key={transaction.id}>
-                  {transaction.currency} - {transaction.amount} at {transaction.rate}
+              {rateLocks.map((rateLock) => (
+                <li key={rateLock.RateLockTxnId}>
+                  <div className='transaction-card'>
+                    <div className='icon'>
+                      <span className='material-symbols-outlined'>
+                        {rateLock.Exchange_Status === 'Pending' ? 'preliminary' : 'check_circle'}
+                      </span>
+                    </div>
+                    <div className='history-row'>
+                      <div className='history-col' style={{ fontWeight: 'bold' }}>
+                        <span className='label'>Last updated Date:</span>
+                        <span className='value'>{new Date(rateLock.DateTime).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
+                      </div>
+                    </div>
+                    <div className='history-row'>
+                      <div className='history-col'>
+                        <span className='label'>Currency:</span>
+                        <span className='value'>{rateLock.Currency}</span>
+                      </div>
+                      <div className='history-col'>
+                        <span className='label'>Rate:</span>
+                        <span className='value'>{rateLock.X_Rate}</span>
+                      </div>
+                    </div>
+                    <div className='history-row'>
+                      <div className='history-col'>
+                        <span className='label'>Amount:</span>
+                        <span className='value'>{rateLock.Amount.toFixed(2)}</span>
+                      </div>
+                      <div className='history-col'>
+                        <span className='label'>Status:</span>
+                        <span className='value'>{rateLock.Exchange_Status}</span>
+                      </div>
+                    </div>
+                  </div>
                 </li>
               ))}
             </ul>

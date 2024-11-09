@@ -73,7 +73,7 @@
   margin-bottom: 20px;
   color: #ccc;
   font-size: 0.8rem;
-  height: 10px;
+  height: 12px;
   overflow: hidden;
   align-items: center;
 }
@@ -150,4 +150,48 @@
   100% {
     transform: rotate(360deg);
   }
+}
+
+
+
+
+
+
+.transaction-card {
+  background-color: none;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  margin-right: 10px;
+}
+
+.material-symbols-outlined {
+  font-size: 24px;
+  color: #56E1E9; /* Adjust color as needed */
+}
+
+.history-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.history-col {
+  flex: 1;
+  padding: 5px;
+}
+
+.label {
+  color: white;
+  display: block;
+}
+
+.value {
+  color: #ccc;
+  display: block;
 }

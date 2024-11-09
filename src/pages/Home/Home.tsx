@@ -50,16 +50,25 @@ const History = (): React.JSX.Element => {
       })
       .catch((error) => console.error('Error fetching account data:', error));
   
-    // Fetch transactions
-    fetch(`https://personal-6hjam0f0.outsystemscloud.com/ExchangeCurrency/rest/TransactionLogAPI/GetSingleAcctTransactions?AccountId=${accountId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('Fetched transactions:', data);
-        setTransactions(Array.isArray(data) ? data : []); // Set to an empty array if data is not an array
-      })
-      
-      .catch((error) => console.error('Error fetching transactions:', error));
-  }, [accountId]); // Add accountId here
+    // Fetch transactions when activeTab is 'spending' tab
+    if (activeTab === 'spending') {
+      fetch(`https://personal-6hjam0f0.outsystemscloud.com/ExchangeCurrency/rest/TransactionLogAPI/GetSingleAcctTransactions?AccountId=${accountId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('Fetched transactions:', data);
+          setTransactions(Array.isArray(data) ? data : []); // Set to an empty array if data is not an array
+        })
+        .catch((error) => console.error('Error fetching transactions:', error));
+    }
+  
+    // Reset transactions when switching to the 'addPayment' tab to reload fresh data
+    if (activeTab === 'addPayment') {
+      setTransactions([]); // Clear current transactions to show fresh data
+    }
+  
+  }, [accountId, activeTab]); // Add activeTab here to trigger fetch on tab change
+  
+  
   
 
   const indexOfLastTransaction = currentPage * transactionsPerPage;
@@ -289,65 +298,78 @@ const History = (): React.JSX.Element => {
 
 
   
-        {activeTab === 'addPayment' && (
-          <>
-            <div className='payment-section'>
-              <div className='currency-selection'>
-              <select
-                className='currency-dropdown'
-                value={selectedCurrency}
-                onChange={(e) => setSelectedCurrency(e.target.value)}
-              >
-                <option value=''>Select Currency</option>
-                {accountData?.Currencies?.map((currency) => (
-                  <option key={currency.CurrencyCode} value={currency.CurrencyCode}>
-                    {currency.CurrencyCode}
-                  </option>
-                ))}
-              </select>
-
-                <span className='balance-info'>
-                  Balance: {selectedCurrency ? `${accountData?.Currencies.find(c => c.CurrencyCode === selectedCurrency)?.Amount.toFixed(2) || 0}` : 'N/A'}
-                </span>
-              </div>
-              
-              <div>
-                <div className='amount-section'>
-                  <input
-                    id='paymentAmount'
-                    className='amountInput'
-                    value={paymentAmount !== 0 ? paymentAmount : ''}
-                    type='number'
-                    placeholder='Amount'
-                    autoComplete='off'
-                    onChange={(e) => setPaymentAmount(Number(e.target.value))}
-                  />
+      {activeTab === 'addPayment' && (
+        <>
+          <div className='payment-section'>
+          <div className='row' />
+          <div className='row' />
+            <div className='payment-grid'>
+              <div className='grid-row'>
+                <div className='grid-col'>
+                  <select
+                    className='currency-dropdown'
+                    value={selectedCurrency}
+                    onChange={(e) => setSelectedCurrency(e.target.value)}
+                  >
+                    <option value=''>Select Currency</option>
+                    {accountData?.Currencies?.map((currency) => (
+                      <option key={currency.CurrencyCode} value={currency.CurrencyCode}>
+                        {currency.CurrencyCode}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-                <div className='recipient-section'>
-                  <input
-                    id='recipientAccount'
-                    className='recipientInput'
-                    type='number'
-                    value={recipientAccount}
-                    onChange={(e) => setRecipientAccount(e.target.value)}
-                    placeholder='Account number'
-                  />
+                <div className='grid-col'>
+                  <div className='amount-section'>
+                    <input
+                      id='paymentAmount'
+                      className='amountInput'
+                      value={paymentAmount !== 0 ? paymentAmount : ''}
+                      type='number'
+                      placeholder='Amount'
+                      autoComplete='off'
+                      onChange={(e) => setPaymentAmount(Number(e.target.value))}
+                    />
+                  </div>
                 </div>
               </div>
-  
-              <Divider />
+              <div className='grid-row'>
+                <div className='grid-col'>
+                  <span className='balance-info'>
+                    Balance: {selectedCurrency ? `${accountData?.Currencies.find(c => c.CurrencyCode === selectedCurrency)?.Amount.toFixed(2) || 0}` : 'N/A'}
+                  </span>
+                </div>
+                <div className='grid-col'>
+                  <div className='recipient-section'>
+                    <input
+                      id='recipientAccount'
+                      className='recipientInput'
+                      type='number'
+                      value={recipientAccount}
+                      onChange={(e) => setRecipientAccount(e.target.value)}
+                      placeholder='Account number'
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
             <Divider />
-            <div className='add-buttons flex flex-space-between'>
-              <button type='button' className='LocalButton' onClick={handleAddPayment}>
-                Send Money
-              </button>
+            <div className='submitButton'>
+              <div className='add-buttons flex flex-space-between'>
+                <button type='button' className='LocalButton' onClick={handleAddPayment}>
+                  Send Money
+                </button>
+              </div>
+              <div className='add-buttons'>
+                {message && <p className='message'>{message}</p>}
+              </div>
             </div>
-            <div className='add-buttons'>
-              {message && <p className='message'>{message}</p>}
-            </div>
-          </>
-        )}
+            <div className='row' />
+            <div className='row' />
+          </div>
+          <Divider />
+        </>
+      )}
       </div>
     </div>
   );  
