@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 /* src/pages/Home.css */
 .history-section {
     background-color: none;
@@ -5,8 +9,12 @@
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-.history-container{
-  width: 400px;
+.history-container {
+  width: 500px; /* Match the width of .exchange-section */
+  max-width: 500px; /* Ensure it doesn't exceed this width */
+  height: 500px;
+  overflow-y: auto;
+  box-sizing: border-box; /* Ensure padding and borders are included in the width */
 }
 .tabs {
   margin-bottom: 20px;

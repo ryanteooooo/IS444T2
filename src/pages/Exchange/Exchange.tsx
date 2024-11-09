@@ -9,13 +9,15 @@ import Divider from '../../components/Divider/Divider';
 const ExchangeSection = (): React.JSX.Element => {
   const { accountID: accountId } = useAuth();
   const [activeTab, setActiveTab] = useState<'exchange' | 'limit' | 'history'>('exchange');
-  const [liveRate, setLiveRate] = useState<number>(0); // Separate state for live rate
+  const [liveRate, setLiveRate] = useState<number>(0);
   const [exchangeRate, setExchangeRate] = useState<number>(0);
   const [selectedCurrency, setSelectedCurrency] = useState<string>('');
   const [transactions, setTransactions] = useState<any[]>([]);
   const [limitOrders, setLimitOrders] = useState<any[]>([]);
   const [paymentAmount, setPaymentAmount] = useState<number>(0);
   const [balance, setBalance] = useState<string>('N/A');
+  const [message, setMessage] = useState<string>(''); // State for output message
+  const [isLoading, setIsLoading] = useState<boolean>(false); // State for loading animation
 
   const currencies = ['USD', 'MYR', 'EUR', 'JPY', 'GBP', 'AUD', 'CAD', 'CHF', 'CNY', 'THB'];
 
@@ -40,8 +42,13 @@ const ExchangeSection = (): React.JSX.Element => {
       });
       const data = await response.json();
       console.log('Live rate data:', data);
-      setLiveRate(data.rate);
-      setExchangeRate(data.rate); // Initialize exchange rate with live rate
+
+      // Set the live rate with 5 decimal places
+      setLiveRate(parseFloat(Number(data.rate).toFixed(5)));  // Round to 5 decimal places and convert back to number
+
+      // Initialize exchange rate with live rate
+      setExchangeRate(parseFloat(Number(data.rate).toFixed(5)));  // Round to 5 decimal places and convert back to number
+
     } catch (error) {
       console.error('Error fetching live rate:', error);
     }
@@ -55,6 +62,26 @@ const ExchangeSection = (): React.JSX.Element => {
   }, [selectedCurrency, fetchBalance, fetchLiveRate]);
 
   const handleLiveExchangeSubmit = async () => {
+    if (!accountId) {
+      setMessage('Account ID is missing.');
+      return;
+    }
+    if (!selectedCurrency) {
+      setMessage('Please select a currency.');
+      return;
+    }
+    if (!exchangeRate || exchangeRate <= 0) {
+      setMessage('Please enter a valid exchange rate.');
+      return;
+    }
+    if (!paymentAmount || paymentAmount <= 0) {
+      setMessage('Please enter a valid amount.');
+      return;
+    }
+
+    setIsLoading(true); // Start loading animation
+    const startTime = Date.now();
+
     try {
       console.log('Submitting exchange:', {
         AccountId: accountId,
@@ -76,14 +103,34 @@ const ExchangeSection = (): React.JSX.Element => {
         }),
       });
       const data = await response.json();
-      console.log('Exchange submitted:', data);
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = Math.max(0, 1000 - elapsedTime); // Ensure at least 1 second delay
+
+      setTimeout(() => {
+        setIsLoading(false); // Stop loading animation
+        if (response.ok) {
+          setMessage('Exchange submitted successfully!');
+        } else {
+          setMessage('Error submitting exchange.');
+        }
+        console.log('Exchange submitted:', data);
+      }, remainingTime);
     } catch (error) {
       console.error('Error submitting exchange:', error);
+      setIsLoading(false);
+      setMessage('Error submitting exchange.');
     }
   };
 
   return (
-    <div className='exchange-section'>
+    <div className={`exchange-section ${isLoading ? 'blur' : ''}`}>
+      {isLoading && (
+        <div className='progress-icon'>
+          <span className='material-symbols-outlined' style={{ fontSize: '48px' }}>
+            progress_activity
+          </span>
+        </div>
+      )}
       <div className='tabs flex flex-space-between'>
         <div className='rectangle no-select flex flex-space-between'>
           <button
@@ -109,6 +156,8 @@ const ExchangeSection = (): React.JSX.Element => {
         {activeTab === 'exchange' && (
           <div className='exchange-tab'>
             <div className='exchange-inputs'>
+            <div className='row' />
+            <div className='row' />
               <div className='row'>
                 <div className='col'>Select Currency:</div>
                 <div className='col'>
@@ -144,13 +193,14 @@ const ExchangeSection = (): React.JSX.Element => {
               </div>
               <div className='row'>
                 <div className='col'>Change Amount:</div>
-                <div className='col'>
+                <div className='col input-with-currency'>
                   <input
                     type='number'
                     value={paymentAmount}
                     onChange={(e) => setPaymentAmount(Number(e.target.value))}
                     className='amount-input'
                   />
+                  <span className='currency-label'>SGD</span>
                 </div>
               </div>
               <div className='row' />
@@ -162,9 +212,14 @@ const ExchangeSection = (): React.JSX.Element => {
                   </span>
                 </div>
               </div>
-              <button type='button' onClick={handleLiveExchangeSubmit} className='submit-button'>
-                Submit
-              </button>
+              <div className='submit-button-container'>
+                <button type='button' onClick={handleLiveExchangeSubmit} className='submit-button'>
+                  Submit
+                </button>
+              </div>
+              {message && <p className='message'>{message}</p>}
+              <div className='row' />
+              <div className='row' />
             </div>
           </div>
         )}

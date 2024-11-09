@@ -1,9 +1,14 @@
+* {
+  box-sizing: border-box;
+}
+
 .exchange-section {
   background-color: none;
   padding: 10px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 500px;
+  position: relative;
 }
 
 .tabs {
@@ -23,16 +28,17 @@
 .tab-button {
   flex: 1;
   padding: 10px 20px;
-  background-color: #f0f0f0;
+  background-color: rgba(0, 0, 0, 0.2);
   border: none;
   cursor: pointer;
   transition: background-color 0.3s;
   text-align: center;
+  color: white;
 }
 
 .tab-button.active {
-  background-color: #FF8057;
-  color: white;
+  background-color: #56E1E9;
+  color: black;
 }
 
 .exchange-container {
@@ -60,22 +66,23 @@
   justify-content: space-between;
   margin-bottom: 10px;
 }
+
 .s-row {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
   color: #ccc;
   font-size: 0.8rem;
-  height: 10px; /* Adjusted height */
-  overflow: hidden; /* Manage overflow */
-  align-items: center; /* Center content vertically */
+  height: 10px;
+  overflow: hidden;
+  align-items: center;
 }
 
 .col {
   flex: 1;
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Ensure content is spaced evenly */
+  justify-content: space-between;
 }
 
 .currency-select,
@@ -94,21 +101,53 @@
   font-size: 0.8rem;
 }
 
-
+.submit-button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
 
 .submit-button {
-  background-color: #FF8057;
+  width: 350px;
+  height: 50px;
+  background-color: rgba(0, 0, 0, 0.2);
   color: white;
   border: none;
+  border-radius: 10px;
   cursor: pointer;
-  border-radius: 4px;
-  padding: 8px;
-  width: 100%;
+  transition: background-color 0.3s;
   text-align: center;
-  margin-top: 10px;
-  font-size: 0.85rem;
+  font-size: 16px;
 }
 
 .submit-button:hover {
-  background-color: #ff8157de;
+  background-color: #56E1E9;
+}
+
+.message {
+  color: red;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.progress-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.progress-icon .material-symbols-outlined {
+  animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
