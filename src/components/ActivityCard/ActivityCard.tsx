@@ -5,19 +5,17 @@ import './ActivityCard.css'; // Assuming you have a CSS file for styling
 interface ActivityCardProps {
     name: string;
     description: string;
-    rating: string;
     image: string;
     price: string;
-    bookingLink: string;
+    bookingLink: string; 
 }
 
 const ActivityCard: React.FC<ActivityCardProps> = ({
     name,
     description,
-    rating,
     image,
     price,
-    bookingLink,
+    bookingLink, 
 }) => {
     return (
         <div className='activity-card'>
@@ -27,8 +25,8 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
                 <p className='activity-description'>{description}</p>
                 <div className='activity-info'>
                     <p className='activity-price'>{price}</p>
-                    <a href={bookingLink} target='_blank' rel='noopener noreferrer' className='activity-link'>
-                        Learn More
+                    <a href={bookingLink} target="_blank" rel="noopener noreferrer" className='activity-booking-link'>
+                        Book Now
                     </a>
                 </div>
             </div>

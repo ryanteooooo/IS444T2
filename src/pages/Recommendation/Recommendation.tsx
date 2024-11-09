@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import ActivityCard from '../../components/ActivityCard/ActivityCard';
 import './Recommendation.css';
-
 import Actions from '../../components/Actions/Actions';
 import Layout from '../../components/Layout/Layout';
 import Divider from '../../components/Divider/Divider';
@@ -9,90 +9,14 @@ import Divider from '../../components/Divider/Divider';
 interface Activity {
     id: string;
     name: string;
-    shortDescription: string;
-    rating: string;
+    description: string;
     pictures: string[];
-    price: {
-        currencyCode: string;
-        amount: string;
+    price?: {
+        amount?: string;
+        currencyCode?: string;
     };
-    bookingLink: string;
+    bookingLink?: string;
 }
-
-const dummyData: Activity[] = [
-    {
-        id: "1",
-        name: "Skip-the-line tickets to the Prado Museum",
-        shortDescription: "Book your tickets for the Prado Museum in Madrid, discover masterpieces by Velázquez, Goya, and more.",
-        rating: "4.5",
-        pictures: ["https://images.musement.com/cover/0001/07/prado-museum-tickets_header-6456.jpeg?w=500"],
-        price: {
-            currencyCode: "EUR",
-            amount: "16.00",
-        },
-        bookingLink: "https://b2c.mla.cloud/c/QCejqyor?c=2WxbgL36",
-    },
-    {
-        id: "2",
-        name: "Guided Tour of the Louvre Museum",
-        shortDescription: "Enjoy a guided tour through the Louvre and discover iconic artworks like the Mona Lisa.",
-        rating: "4.7",
-        pictures: ["https://engineering.case.edu/sites/default/files/styles/715x447/public/plane-take-off-feat.jpg?itok=jMjZMlWG"],
-        price: {
-            currencyCode: "EUR",
-            amount: "50.00",
-        },
-        bookingLink: "https://example.com/louvre-booking",
-    },
-    {
-        id: "3",
-        name: "BLALBLABLA",
-        shortDescription: "Enjoy a guided tour through the Louvre and discover iconic artworks like the Mona Lisa.",
-        rating: "4.7",
-        pictures: [""],
-        price: {
-            currencyCode: "EUR",
-            amount: "50.00",
-        },
-        bookingLink: "https://example.com/louvre-booking",
-    },
-    {
-        id: "4",
-        name: "BLALBLABLA",
-        shortDescription: "Enjoy a guided tour through the Louvre and discover iconic artworks like the Mona Lisa.",
-        rating: "4.7",
-        pictures: ["https://engineering.case.edu/sites/default/files/styles/715x447/public/plane-take-off-feat.jpg?itok=jMjZMlWG"],
-        price: {
-            currencyCode: "EUR",
-            amount: "50.00",
-        },
-        bookingLink: "https://example.com/louvre-booking",
-    },
-    {
-        id: "5",
-        name: "BLALBLABLA",
-        shortDescription: "Enjoy a guided tour through the Louvre and discover iconic artworks like the Mona Lisa.",
-        rating: "4.7",
-        pictures: ["https://engineering.case.edu/sites/default/files/styles/715x447/public/plane-take-off-feat.jpg?itok=jMjZMlWG"],
-        price: {
-            currencyCode: "EUR",
-            amount: "50.00",
-        },
-        bookingLink: "https://example.com/louvre-booking",
-    },
-    {
-        id: "6",
-        name: "BLALBLABLA",
-        shortDescription: "Enjoy a guided tour through the Louvre and discover iconic artworks like the Mona Lisa.",
-        rating: "4.7",
-        pictures: ["https://engineering.case.edu/sites/default/files/styles/715x447/public/plane-take-off-feat.jpg?itok=jMjZMlWG"],
-        price: {
-            currencyCode: "EUR",
-            amount: "50.00",
-        },
-        bookingLink: "https://example.com/louvre-booking",
-    },
-];
 
 const Recommendation: React.FC = () => {
     const [activities, setActivities] = useState<Activity[]>([]);
@@ -100,19 +24,26 @@ const Recommendation: React.FC = () => {
     const activitiesPerPage = 5;
 
     useEffect(() => {
-        // const fetchActivities = async () => {
-        //     try {
-        //         const response = await axios.get('/api/get-activities'); // Replace with actual endpoint
-        //         setActivities(response.data.data);
-        //     } catch (error) {
-        //         console.error("Error fetching activities: ", error);
-        //     }
-        // };
+        const fetchActivities = async () => {
+            try {
+                const response = await axios.get('https://personal-6hjam0f0.outsystemscloud.com/AutoExchangeCurrencyLocker/rest/AmadeusActivities/ActivitiesNew');
 
-        // fetchActivities();
+                const fetchedActivities = response.data.data.map((activity: any) => ({
+                    id: activity.id,
+                    name: activity.name,
+                    description: activity.description,
+                    pictures: activity.pictures,
+                    price: activity.price,
+                    bookingLink: activity.bookingLink,
+                }));
 
-        // for dummy data
-        setActivities(dummyData);
+                setActivities(fetchedActivities);
+            } catch (error) {
+                console.error('Error fetching activities: ', error);
+            }
+        };
+
+        fetchActivities();
     }, []);
 
     // Calculate indices for slicing the activities array
@@ -133,7 +64,6 @@ const Recommendation: React.FC = () => {
         }
     };
 
-
     return (
         <Layout>
             <Divider />
@@ -148,11 +78,10 @@ const Recommendation: React.FC = () => {
                     <ActivityCard
                         key={activity.id}
                         name={activity.name}
-                        description={activity.shortDescription}
-                        rating={activity.rating}
+                        description={activity.description}
                         image={activity.pictures[0] ? activity.pictures[0] : "/images/travel.jpg"}
-                        price={`${activity.price.amount} ${activity.price.currencyCode}`}
-                        bookingLink={activity.bookingLink}
+                        price={activity.price?.amount ? `${activity.price.amount} ${activity.price.currencyCode}` : 'N/A'}
+                        bookingLink={activity.bookingLink || '#'}
                     />
                 ))}
             </div>
@@ -180,5 +109,3 @@ const Recommendation: React.FC = () => {
 };
 
 export default Recommendation;
-
-
