@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../AuthContext';
 
 
 
@@ -26,7 +27,8 @@ interface IAccountData {
 
 
 const History = (): React.JSX.Element => {
-  const accountId = "6"; // simulate accountID
+  const { accountID:accountId } = useAuth();
+  // const accountId = "6"; // simulate accountID
   const [activeTab, setActiveTab] = useState<'spending' | 'addPayment'>('spending');
   const [accountData, setAccountData] = useState<IAccountData | null>(null);
   const [transactions, setTransactions] = useState<any[]>([]); // State for transactions
@@ -47,16 +49,18 @@ const History = (): React.JSX.Element => {
         setAccountData(data);
       })
       .catch((error) => console.error('Error fetching account data:', error));
-
+  
     // Fetch transactions
     fetch(`https://personal-6hjam0f0.outsystemscloud.com/ExchangeCurrency/rest/TransactionLogAPI/GetSingleAcctTransactions?AccountId=${accountId}`)
       .then((response) => response.json())
       .then((data) => {
         console.log('Fetched transactions:', data);
-        setTransactions(data);
+        setTransactions(Array.isArray(data) ? data : []); // Set to an empty array if data is not an array
       })
+      
       .catch((error) => console.error('Error fetching transactions:', error));
-  }, []);
+  }, [accountId]); // Add accountId here
+  
 
   const indexOfLastTransaction = currentPage * transactionsPerPage;
   const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
@@ -73,13 +77,85 @@ const History = (): React.JSX.Element => {
     return format(date, 'dd MMMM yyyy');
   };
   
-  const formatReason = (reason: string) => {
+  const formatReason = (reason: string, txn: any) => {
     if (reason.startsWith('Transfer from')) {
       const parts = reason.split(' ');
-      const accountNumber = parts[4]; // Get the second account ID
+      const accountNumber = parts[4]; // Get the sender's account ID
       return `Transfer to Account: ${accountNumber}`;
     }
+    
+    if (reason.startsWith('Receive')) {
+      const parts = reason.split(' ');
+      const accountNumber = parts[2]; // Get the sender's account ID
+      return `Receive from Account: ${accountNumber}`;
+    }
+  
     return reason;
+  };
+  
+  
+
+  const handleAddPayment = () => {
+    if (!accountData) return;
+  
+    if (!selectedCurrency) {
+      setMessage('Please select a currency.');
+      return;
+    }
+  
+    if (!paymentAmount || paymentAmount <= 0) {
+      setMessage('Please enter a valid amount.');
+      return;
+    }
+  
+    if (!recipientAccount) {
+      setMessage('Please enter a recipient account number.');
+      return;
+    }
+  
+    const currency = accountData.Currencies.find((c) => c.CurrencyCode === selectedCurrency);
+  
+    if (currency && currency.Amount >= paymentAmount) {
+      setIsLoading(true); // Start loading animation
+      const startTime = Date.now();
+  
+      fetch('https://personal-6hjam0f0.outsystemscloud.com/TransferMoney/rest/TransferMoneyComposite/TransferMoney', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          AccountId1: accountId,
+          AccountId2: recipientAccount,
+          Currency: selectedCurrency,
+          Amount: paymentAmount,
+        }),
+      })
+        .then((response) => {
+          const elapsedTime = Date.now() - startTime;
+          const remainingTime = Math.max(0, 1000 - elapsedTime); // Ensure at least 1 second delay
+  
+          setTimeout(() => {
+            setIsLoading(false); // Stop loading animation
+            if (response.ok) {
+              setMessage('Payment added successfully!');
+            } else {
+              setMessage('Error adding payment.');
+            }
+          }, remainingTime);
+        })
+        .catch((error) => {
+          const elapsedTime = Date.now() - startTime;
+          const remainingTime = Math.max(0, 1000 - elapsedTime); // Ensure at least 1 second delay
+  
+          setTimeout(() => {
+            setIsLoading(false); // Stop loading animation
+            setMessage('Error adding payment.');
+          }, remainingTime);
+        });
+    } else {
+      setMessage('Insufficient balance for this currency.');
+    }
   };
 
   // const handleAddPayment = () => {
@@ -106,92 +182,29 @@ const History = (): React.JSX.Element => {
   //     setIsLoading(true); // Start loading animation
   //     const startTime = Date.now();
   
-  //     fetch('https://personal-6hjam0f0.outsystemscloud.com/TransferMoney/rest/TransferMoneyComposite/TransferMoney', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify({
-  //         AccountId1: accountId,
-  //         AccountId2: recipientAccount,
-  //         Currency: selectedCurrency,
-  //         Amount: paymentAmount,
-  //       }),
-  //     })
-  //       .then((response) => {
-  //         const elapsedTime = Date.now() - startTime;
-  //         const remainingTime = Math.max(0, 1000 - elapsedTime); // Ensure at least 1 second delay
+  //     // Simulate API call
+  //     const requestBody = {
+  //       AccountId1: accountId,
+  //       AccountId2: recipientAccount,
+  //       Currency: selectedCurrency,
+  //       Amount: paymentAmount,
+  //     };
   
-  //         setTimeout(() => {
-  //           setIsLoading(false); // Stop loading animation
-  //           if (response.ok) {
-  //             setMessage('Payment added successfully!');
-  //           } else {
-  //             setMessage('Error adding payment.');
-  //           }
-  //         }, remainingTime);
-  //       })
-  //       .catch((error) => {
-  //         const elapsedTime = Date.now() - startTime;
-  //         const remainingTime = Math.max(0, 1000 - elapsedTime); // Ensure at least 1 second delay
+  //     console.log('API transfer money with body:', JSON.stringify(requestBody, null, 2));
   
-  //         setTimeout(() => {
-  //           setIsLoading(false); // Stop loading animation
-  //           setMessage('Error adding payment.');
-  //         }, remainingTime);
-  //       });
+  //     const elapsedTime = Date.now() - startTime;
+  //     const remainingTime = Math.max(0, 1000 - elapsedTime); // Ensure at least 1 second delay
+  
+  //     setTimeout(() => {
+  //       setIsLoading(false); // Stop loading animation
+  //       setMessage('Payment added successfully!');
+  //       console.log('Payment added successfully!');
+  //     }, remainingTime);
   //   } else {
   //     setMessage('Insufficient balance for this currency.');
+  //     console.log('Insufficient balance for this currency.');
   //   }
   // };
-
-  const handleAddPayment = () => {
-    if (!accountData) return;
-  
-    if (!selectedCurrency) {
-      setMessage('Please select a currency.');
-      return;
-    }
-  
-    if (!paymentAmount || paymentAmount <= 0) {
-      setMessage('Please enter a valid amount.');
-      return;
-    }
-  
-    if (!recipientAccount) {
-      setMessage('Please enter a recipient account number.');
-      return;
-    }
-  
-    const currency = accountData.Currencies.find((c) => c.CurrencyCode === selectedCurrency);
-  
-    if (currency && currency.Amount >= paymentAmount) {
-      setIsLoading(true); // Start loading animation
-      const startTime = Date.now();
-  
-      // Simulate API call
-      const requestBody = {
-        AccountId1: accountId,
-        AccountId2: recipientAccount,
-        Currency: selectedCurrency,
-        Amount: paymentAmount,
-      };
-  
-      console.log('API transfer money with body:', JSON.stringify(requestBody, null, 2));
-  
-      const elapsedTime = Date.now() - startTime;
-      const remainingTime = Math.max(0, 1000 - elapsedTime); // Ensure at least 1 second delay
-  
-      setTimeout(() => {
-        setIsLoading(false); // Stop loading animation
-        setMessage('Payment added successfully!');
-        console.log('Payment added successfully!');
-      }, remainingTime);
-    } else {
-      setMessage('Insufficient balance for this currency.');
-      console.log('Insufficient balance for this currency.');
-    }
-  };
   
   
 
@@ -229,54 +242,70 @@ const History = (): React.JSX.Element => {
       <Divider />
   
       <div className='history-container'>
-        {activeTab === 'spending' && (
-          <div className='spending-history'>
-            {currentTransactions.map((txn) => (
-              <div key={txn.TxnId} className='transaction-card'>
-                <div className='circle no-select flex flex-col flex-v-center flex-h-center'>
-                  <span className='material-symbols-outlined'>
-                    {txn.Reason.startsWith('Currency Exchange') ? 'currency_exchange' : 'send_money'}
-                  </span>
+      {activeTab === 'spending' && (
+        <div className='spending-history'>
+          {currentTransactions.length > 0 ? (
+            currentTransactions.map((txn) => {
+              let icon = 'send_money'; // Default icon
+              if (txn.Reason.startsWith('Currency Exchange')) {
+                icon = 'currency_exchange';
+              } else if (txn.Reason.startsWith('Receive')) {
+                icon = 'attach_money';
+              }
+
+              return (
+                <div key={txn.TxnId} className='transaction-card'>
+                  <div className='circle no-select flex flex-col flex-v-center flex-h-center'>
+                    <span className='material-symbols-outlined'>{icon}</span>
+                  </div>
+                  <div>
+                    <p>{formatReason(txn.Reason, txn)}</p>
+                    <p>{formatDate(txn.DateTime)}</p>
+                  </div>
+                  <div>
+                    <p>{txn.Currency} {formatAmount(txn.Amount)}</p>
+                    {txn.X_Rate && <p>Rate: {txn.X_Rate}</p>}
+                  </div>
                 </div>
-                <div>
-                  <p>{formatReason(txn.Reason)}</p>
-                  <p>{formatDate(txn.DateTime)}</p>
-                </div>
-                <div>
-                  <p>{txn.Currency} {formatAmount(txn.Amount)}</p>
-                </div>
-              </div>
-            ))}
-            <div className='pagination-buttons'>
-              <button type='button' className='paginationbutton' onClick={prevPage} disabled={currentPage === 1}>
-                Previous
-              </button>
-              <button type='button' className='paginationbutton' onClick={nextPage} disabled={indexOfLastTransaction >= transactions.length}>
-                Next
-              </button>
-            </div>
-            <div className='pagination-info'>
-              Page {currentPage} of {totalPages}
-            </div>
+              );
+            })
+          ) : (
+            <p className='no-transactions-message'>- No Transactions -</p>
+          )}
+          <div className='pagination-buttons'>
+            <button type='button' className='paginationbutton' onClick={prevPage} disabled={currentPage === 1}>
+              Previous
+            </button>
+            <button type='button' className='paginationbutton' onClick={nextPage} disabled={indexOfLastTransaction >= transactions.length}>
+              Next
+            </button>
           </div>
-        )}
+          <div className='pagination-info'>
+            Page {currentPage} of {totalPages}
+          </div>
+        </div>
+      )}
+
+
+
   
         {activeTab === 'addPayment' && (
           <>
             <div className='payment-section'>
               <div className='currency-selection'>
-                <select
-                  className='currency-dropdown'
-                  value={selectedCurrency}
-                  onChange={(e) => setSelectedCurrency(e.target.value)}
-                >
-                  <option value=''>Select Currency</option>
-                  {accountData?.Currencies.map((currency) => (
-                    <option key={currency.CurrencyCode} value={currency.CurrencyCode}>
-                      {currency.CurrencyCode}
-                    </option>
-                  ))}
-                </select>
+              <select
+                className='currency-dropdown'
+                value={selectedCurrency}
+                onChange={(e) => setSelectedCurrency(e.target.value)}
+              >
+                <option value=''>Select Currency</option>
+                {accountData?.Currencies?.map((currency) => (
+                  <option key={currency.CurrencyCode} value={currency.CurrencyCode}>
+                    {currency.CurrencyCode}
+                  </option>
+                ))}
+              </select>
+
                 <span className='balance-info'>
                   Balance: {selectedCurrency ? `${accountData?.Currencies.find(c => c.CurrencyCode === selectedCurrency)?.Amount.toFixed(2) || 0}` : 'N/A'}
                 </span>

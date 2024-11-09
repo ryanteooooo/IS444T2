@@ -80,6 +80,15 @@ label {
 }
 
 
+.no-transactions-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px; /* Adjust height as needed */
+  font-size: 1.2rem;
+  color: white; /* Optional: color to make it stand out */
+  text-align: center;
+}
 
 
 
