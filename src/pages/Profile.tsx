@@ -57,7 +57,7 @@ const Profile = (): React.JSX.Element => {
       <div className='account-photo' style={{ backgroundImage: `url("images/profile.jpg")` }} />
 
       <div className='center'>
-        <h2>{userName || 'Loading...'}</h2> {/* Display fetched user name or 'Loading...' */}
+        <h2>{userName}</h2>
       </div>
 
       {/* Current Balance section with onClick to show currency wallets */}
@@ -78,7 +78,7 @@ const Profile = (): React.JSX.Element => {
           style={{ cursor: 'pointer' }}
         >
           <span className='material-symbols-outlined'>credit_card</span>
-          Add Card
+          Link Account to Bank
         </div>
       </div>
 
