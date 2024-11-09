@@ -10,18 +10,18 @@ const Profile = (): React.JSX.Element => {
   const [showModal, setShowModal] = useState(false);
   const [showBalanceModal, setShowBalanceModal] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
+  const [currencies, setCurrencies] = useState<{ CurrencyCode: string; Amount: number }[]>([]);
 
-  const { accountID } = useAuth(); // Access accountID from AuthContext
+  const { accountID } = useAuth();
 
   useEffect(() => {
-    // Fetch user data when accountID changes
     const fetchUserName = async () => {
       if (!accountID) {
         console.error('Account ID is not set');
         return;
       }
 
-      const accountIdInt = parseInt(accountID, 10); // Convert accountID to an integer
+      const accountIdInt = parseInt(accountID, 10);
       if (Number.isNaN(accountIdInt)) {
         console.error('Invalid AccountID: must be a number');
         return;
@@ -31,13 +31,39 @@ const Profile = (): React.JSX.Element => {
         const response = await axios.get(
           `https://personal-6hjam0f0.outsystemscloud.com/ExchangeCurrency/rest/UserAPI/GetSingleUser?AccountId=${accountIdInt}`
         );
-        setUserName(response.data.Name); // Set the user name from the API response
+        setUserName(response.data.Name);
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
     };
 
     fetchUserName();
+  }, [accountID]);
+
+  useEffect(() => {
+    const fetchCurrencies = async () => {
+      if (!accountID) {
+        console.error('Account ID is not set');
+        return;
+      }
+
+      const accountIdInt = parseInt(accountID, 10);
+      if (Number.isNaN(accountIdInt)) {
+        console.error('Invalid AccountID: must be a number');
+        return;
+      }
+
+      try {
+        const response = await axios.get(
+          `https://personal-6hjam0f0.outsystemscloud.com/ExchangeCurrency/rest/CurrencyBankAPI/GetSingleAccountCurrencyNew?AccountId=${accountIdInt}`
+        );
+        setCurrencies(response.data.Currencies);
+      } catch (error) {
+        console.error('Error fetching currency data:', error);
+      }
+    };
+
+    fetchCurrencies();
   }, [accountID]);
 
   const handleSignOut = () => {
@@ -47,6 +73,19 @@ const Profile = (): React.JSX.Element => {
 
   const toggleModal = () => setShowModal(!showModal);
   const toggleBalanceModal = () => setShowBalanceModal(!showBalanceModal);
+
+  // Helper function to get the currency symbol
+  const getCurrencySymbol = (currencyCode: string) => {
+    const symbols: { [key: string]: string } = {
+      USD: '$',
+      EUR: '€',
+      GBP: '£',
+      SGD: 'S$',
+      AUD: 'A$',
+      THB: '฿'
+    };
+    return symbols[currencyCode] || '';
+  };
 
   return (
     <Layout>
@@ -60,12 +99,11 @@ const Profile = (): React.JSX.Element => {
         <h2>{userName}</h2>
       </div>
 
-      {/* Current Balance section with onClick to show currency wallets */}
       <div className='balance-display' onClick={toggleBalanceModal} style={{ cursor: 'pointer' }}>
         <span className='material-symbols-outlined'>account_balance_wallet</span>
         <div className='balance-info'>
           <h2>Current Balance</h2>
-          <h1 className='balance-amount'>$SGD 650.80</h1> {/* Mock value */}
+          <h1 className='balance-amount'>$SGD 650.80</h1>
         </div>
       </div>
 
@@ -105,7 +143,6 @@ const Profile = (): React.JSX.Element => {
 
       <Divider />
 
-      {/* Add Card Modal */}
       {showModal && (
         <div className='modal-overlay'>
           <div className='modal-content'>
@@ -129,16 +166,21 @@ const Profile = (): React.JSX.Element => {
         </div>
       )}
 
-      {/* Currency Wallet Modal */}
       {showBalanceModal && (
         <div className='modal-overlay'>
           <div className='modal-content'>
             <h2>Your Currency Wallets</h2>
             <ul>
-              <li>EUR Wallet: €650.80</li>
-              <li>GBP Wallet: £550.60</li>
-              <li>USD Wallet: $700.50</li>
-              {/* Add more wallets as needed */}
+              {currencies.length > 0 ? (
+                currencies.map((currency) => (
+                  <li key={currency.CurrencyCode}>
+                    {currency.CurrencyCode} Wallet: {getCurrencySymbol(currency.CurrencyCode)}
+                    {currency.Amount.toFixed(2)}
+                  </li>
+                ))
+              ) : (
+                <li>Loading...</li>
+              )}
             </ul>
             <button type='button' onClick={toggleBalanceModal}>
               Close
