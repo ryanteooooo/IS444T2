@@ -40,6 +40,8 @@
 }
 
 .history-container {
+  width: 100%;
+  max-width: 600px; /* Adjust the max-width as needed */
   height: 500px;
   overflow-y: auto;
 }
@@ -123,6 +125,12 @@ label {
   justify-content: center;
   margin-top: 20px;
 }
+.pagination-info{
+  display: flex;
+  justify-content: center;
+  margin-top: 5px;
+}
+
 
 .paginationbutton {
   width: 120px; /* Set the width to 120px */
@@ -225,3 +233,49 @@ label {
 .LocalButton:hover {
   background-color: #56E1E9; /* Hover background color */
 }
+
+
+/* blur function */
+.history-section {
+  position: relative;
+}
+
+.history-section.blur .history-container {
+  filter: blur(5px);
+}
+
+/* progress-icon */
+.material-symbols-outlined {
+  font-variation-settings:
+      'FILL' 0,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 24;
+  color: #56E1E9; /* Set the color */
+}
+
+@keyframes rotate {
+  0% {
+      transform: rotate(0deg);
+  }
+  100% {
+      transform: rotate(360deg);
+  }
+}
+
+.progress-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  pointer-events: none; /* Ensure the icon is not interactive */
+}
+
+.progress-icon .material-symbols-outlined {
+  animation: rotate 2s linear infinite; /* Apply the rotation animation */
+}
+
+
+
+

@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
+import { Link } from 'react-router-dom';
+
+
 
 // components
 import Layout from '../../components/Layout/Layout';
@@ -33,6 +36,7 @@ const History = (): React.JSX.Element => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const transactionsPerPage = 6;
   const [recipientAccount, setRecipientAccount] = useState<string>(''); // State for recipient account
+  const [isLoading, setIsLoading] = useState<boolean>(false); // State for loading animation
 
   useEffect(() => {
     // Fetch account data
@@ -58,6 +62,8 @@ const History = (): React.JSX.Element => {
   const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
   const currentTransactions = transactions.slice(indexOfFirstTransaction, indexOfLastTransaction);
 
+  const totalPages = Math.ceil(transactions.length / transactionsPerPage);
+
   const formatAmount = (amount: number) => amount.toFixed(2);
   const nextPage = () => setCurrentPage((prev) => prev + 1);
   const prevPage = () => setCurrentPage((prev) => prev - 1);
@@ -76,81 +82,131 @@ const History = (): React.JSX.Element => {
     return reason;
   };
 
+  // const handleAddPayment = () => {
+  //   if (!accountData) return;
+  
+  //   if (!selectedCurrency) {
+  //     setMessage('Please select a currency.');
+  //     return;
+  //   }
+  
+  //   if (!paymentAmount || paymentAmount <= 0) {
+  //     setMessage('Please enter a valid amount.');
+  //     return;
+  //   }
+  
+  //   if (!recipientAccount) {
+  //     setMessage('Please enter a recipient account number.');
+  //     return;
+  //   }
+  
+  //   const currency = accountData.Currencies.find((c) => c.CurrencyCode === selectedCurrency);
+  
+  //   if (currency && currency.Amount >= paymentAmount) {
+  //     setIsLoading(true); // Start loading animation
+  //     const startTime = Date.now();
+  
+  //     fetch('https://personal-6hjam0f0.outsystemscloud.com/TransferMoney/rest/TransferMoneyComposite/TransferMoney', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({
+  //         AccountId1: accountId,
+  //         AccountId2: recipientAccount,
+  //         Currency: selectedCurrency,
+  //         Amount: paymentAmount,
+  //       }),
+  //     })
+  //       .then((response) => {
+  //         const elapsedTime = Date.now() - startTime;
+  //         const remainingTime = Math.max(0, 1000 - elapsedTime); // Ensure at least 1 second delay
+  
+  //         setTimeout(() => {
+  //           setIsLoading(false); // Stop loading animation
+  //           if (response.ok) {
+  //             setMessage('Payment added successfully!');
+  //           } else {
+  //             setMessage('Error adding payment.');
+  //           }
+  //         }, remainingTime);
+  //       })
+  //       .catch((error) => {
+  //         const elapsedTime = Date.now() - startTime;
+  //         const remainingTime = Math.max(0, 1000 - elapsedTime); // Ensure at least 1 second delay
+  
+  //         setTimeout(() => {
+  //           setIsLoading(false); // Stop loading animation
+  //           setMessage('Error adding payment.');
+  //         }, remainingTime);
+  //       });
+  //   } else {
+  //     setMessage('Insufficient balance for this currency.');
+  //   }
+  // };
+
   const handleAddPayment = () => {
     if (!accountData) return;
-
+  
     if (!selectedCurrency) {
       setMessage('Please select a currency.');
-      console.log('Please select a currency.');
       return;
     }
   
     if (!paymentAmount || paymentAmount <= 0) {
       setMessage('Please enter a valid amount.');
-      console.log('Please enter a valid amount.');
       return;
     }
   
     if (!recipientAccount) {
       setMessage('Please enter a recipient account number.');
-      console.log('Please enter a recipient account number.');
       return;
     }
-
+  
     const currency = accountData.Currencies.find((c) => c.CurrencyCode === selectedCurrency);
-    console.log('Selected currency:', currency);
-
+  
     if (currency && currency.Amount >= paymentAmount) {
-      fetch('https://personal-6hjam0f0.outsystemscloud.com/TransferMoney/rest/TransferMoneyComposite/TransferMoney', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          AccountId1: accountId,
-          AccountId2: recipientAccount,
-          Currency: selectedCurrency,
-          Amount: paymentAmount,
-        }),
-      })
-        .then((response) => {
-          if (response.ok) {
-            setMessage('Payment added successfully!');
-            console.log('Payment added successfully!');
-          } else {
-            setMessage('Error adding payment.');
-            console.error('Error adding payment.');
-          }
-          })
-        .catch((error) => {
-          setMessage('Error adding payment.');
-          console.error('Error adding payment:', error);
-        });
+      setIsLoading(true); // Start loading animation
+      const startTime = Date.now();
+  
+      // Simulate API call
+      const requestBody = {
+        AccountId1: accountId,
+        AccountId2: recipientAccount,
+        Currency: selectedCurrency,
+        Amount: paymentAmount,
+      };
+  
+      console.log('API transfer money with body:', JSON.stringify(requestBody, null, 2));
+  
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = Math.max(0, 1000 - elapsedTime); // Ensure at least 1 second delay
+  
+      setTimeout(() => {
+        setIsLoading(false); // Stop loading animation
+        setMessage('Payment added successfully!');
+        console.log('Payment added successfully!');
+      }, remainingTime);
     } else {
       setMessage('Insufficient balance for this currency.');
       console.log('Insufficient balance for this currency.');
     }
-    // if (currency && currency.Amount >= paymentAmount) {
-    //   // Simulate API call
-    //   const requestBody = {
-    //     AccountId1: accountId,
-    //     AccountId2: recipientAccount,
-    //     Currency: selectedCurrency,
-    //     Amount: paymentAmount,
-    //   };
-    
-    //   console.log('API transfer money with body:', JSON.stringify(requestBody, null, 2));
-    //   setMessage('Payment added successfully!');
-    //   console.log('Payment added successfully!');
-    // } else {
-    //   setMessage('Insufficient balance for this currency.');
-    //   console.log('Insufficient balance for this currency.');
-    // }
-    
   };
+  
+  
 
   return (
-    <div className='history-section'>
+    <div className={`history-section ${isLoading ? 'blur' : ''}`}>
+      {isLoading && (
+        <div className='progress-icon'>
+            <span className='material-symbols-outlined' style={{ fontSize: '48px' }}>
+                progress_activity
+            </span>
+        </div>
+
+    
+    
+      )}
       <div className='tabs flex flex-space-between'>
         <div className='rectangle no-select flex flex-space-between'>
           <button
@@ -169,39 +225,42 @@ const History = (): React.JSX.Element => {
           </button>
         </div>
       </div>
-
+  
       <Divider />
-
+  
       <div className='history-container'>
-      {activeTab === 'spending' && (
-        <div className='spending-history'>
-          {currentTransactions.map((txn) => (
-            <div key={txn.TxnId} className='transaction-card'>
-              <div className='circle no-select flex flex-col flex-v-center flex-h-center'>
-                <span className='material-symbols-outlined'>
-                  {txn.Reason.startsWith('Currency Exchange') ? 'currency_exchange' : 'send_money'}
-                </span>
+        {activeTab === 'spending' && (
+          <div className='spending-history'>
+            {currentTransactions.map((txn) => (
+              <div key={txn.TxnId} className='transaction-card'>
+                <div className='circle no-select flex flex-col flex-v-center flex-h-center'>
+                  <span className='material-symbols-outlined'>
+                    {txn.Reason.startsWith('Currency Exchange') ? 'currency_exchange' : 'send_money'}
+                  </span>
+                </div>
+                <div>
+                  <p>{formatReason(txn.Reason)}</p>
+                  <p>{formatDate(txn.DateTime)}</p>
+                </div>
+                <div>
+                  <p>{txn.Currency} {formatAmount(txn.Amount)}</p>
+                </div>
               </div>
-              <div>
-                <p>{formatReason(txn.Reason)}</p>
-                <p>{formatDate(txn.DateTime)}</p>
-              </div>
-              <div>
-                <p>{txn.Currency} {formatAmount(txn.Amount)}</p>
-              </div>
+            ))}
+            <div className='pagination-buttons'>
+              <button type='button' className='paginationbutton' onClick={prevPage} disabled={currentPage === 1}>
+                Previous
+              </button>
+              <button type='button' className='paginationbutton' onClick={nextPage} disabled={indexOfLastTransaction >= transactions.length}>
+                Next
+              </button>
             </div>
-          ))}
-          <div className='pagination-buttons'>
-            <button type='button' className='paginationbutton' onClick={prevPage} disabled={currentPage === 1}>
-              Previous
-            </button>
-            <button type='button' className='paginationbutton' onClick={nextPage} disabled={indexOfLastTransaction >= transactions.length}>
-              Next
-            </button>
+            <div className='pagination-info'>
+              Page {currentPage} of {totalPages}
+            </div>
           </div>
-        </div>
-      )}
-
+        )}
+  
         {activeTab === 'addPayment' && (
           <>
             <div className='payment-section'>
@@ -246,14 +305,13 @@ const History = (): React.JSX.Element => {
                   />
                 </div>
               </div>
-
-              
+  
               <Divider />
             </div>
             <Divider />
             <div className='add-buttons flex flex-space-between'>
               <button type='button' className='LocalButton' onClick={handleAddPayment}>
-                  Send Money
+                Send Money
               </button>
             </div>
             <div className='add-buttons'>
@@ -261,10 +319,9 @@ const History = (): React.JSX.Element => {
             </div>
           </>
         )}
-
       </div>
     </div>
-  );
+  );  
 };
 
 const Home = (): React.JSX.Element => (
