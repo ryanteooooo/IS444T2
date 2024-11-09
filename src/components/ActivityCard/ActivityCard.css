@@ -1,55 +1,68 @@
 .activity-card {
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    width: 400px; /* Set a fixed width for consistency */
+    height: 550px; /* Set a fixed height to keep all cards the same size */
+    border: 1px solid #ccc;
+    border-radius: 10px;
     overflow: hidden;
-    max-width: 400px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-    transition: box-shadow 0.3s ease-in-out;
-    background-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     margin: 20px;
-}
-
-.activity-card:hover {
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(255, 255, 255);
 }
 
 .activity-image {
     width: 100%;
-    height: 200px;
+    height: 150px; /* Set a fixed height for the image */
     object-fit: cover;
 }
 
 .activity-content {
-    padding: 16px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: hidden;
 }
 
 .activity-title {
-    margin: 0 0 8px;
-    font-size: 1.5em;
-}
-
-.activity-description {
-    font-size: 0.9em;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
     color: #000000;
 }
 
+.activity-description {
+    flex-grow: 1;
+    overflow: auto; /* Enable scrolling if the content exceeds height */
+    height: 100px; /* Set a fixed height for the description */
+    margin-bottom: 10px;
+    color: #000000;
+    font-size: medium;
+}
+
 .activity-info {
-    margin: 12px 0;
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
-.activity-rating,
 .activity-price {
     font-weight: bold;
+    color: #007bff;
 }
 
-.activity-link {
+.activity-booking-link {
     text-decoration: none;
-    color: #56E1E9;
+    color: #007bff;
     font-weight: bold;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    padding: 5px;
+    transition: background-color 0.3s, color 0.3s;
 }
 
-.activity-link:hover {
-    text-decoration: underline;
+.activity-booking-link:hover {
+    background-color: #007bff;
+    color: #fff;
 }
