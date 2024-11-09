@@ -16,6 +16,7 @@ const ExchangeSection = (): React.JSX.Element => {
   const [limitOrders, setLimitOrders] = useState<any[]>([]);
   const [paymentAmount, setPaymentAmount] = useState<number>(0);
   const [balance, setBalance] = useState<string>('N/A');
+  const [sgdBalance, setSgdBalance] = useState<number>(0); // State for SGD balance
   const [message, setMessage] = useState<string>(''); // State for output message
   const [isLoading, setIsLoading] = useState<boolean>(false); // State for loading animation
   const [rateLocks, setRateLocks] = useState<any[]>([]); // State for rate lock transactions
@@ -29,6 +30,10 @@ const ExchangeSection = (): React.JSX.Element => {
       console.log('Balance data:', data);
       const currencyData = data.Currencies.find((c: any) => c.CurrencyCode === currency);
       setBalance(currencyData ? currencyData.Amount.toFixed(2) : 'N/A');
+
+      // Find and set the SGD balance
+      const sgdData = data.Currencies.find((c: any) => c.CurrencyCode === 'SGD');
+      setSgdBalance(sgdData ? sgdData.Amount : 0);
     } catch (error) {
       console.error('Error fetching balance:', error);
     }
@@ -77,6 +82,10 @@ const ExchangeSection = (): React.JSX.Element => {
     }
     if (!paymentAmount || paymentAmount <= 0) {
       setMessage('Please enter a valid amount.');
+      return;
+    }
+    if (paymentAmount > sgdBalance) {
+      setMessage('Insufficient SGD balance for this exchange.');
       return;
     }
 
