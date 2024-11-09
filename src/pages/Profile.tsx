@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useAuth } from '../AuthContext';
 
 // components
 import Layout from '../components/Layout/Layout';
@@ -6,7 +8,37 @@ import Divider from '../components/Divider/Divider';
 
 const Profile = (): React.JSX.Element => {
   const [showModal, setShowModal] = useState(false);
-  const [showBalanceModal, setShowBalanceModal] = useState(false); // New state for currency wallet modal
+  const [showBalanceModal, setShowBalanceModal] = useState(false);
+  const [userName, setUserName] = useState<string | null>(null);
+
+  const { accountID } = useAuth(); // Access accountID from AuthContext
+
+  useEffect(() => {
+    // Fetch user data when accountID changes
+    const fetchUserName = async () => {
+      if (!accountID) {
+        console.error('Account ID is not set');
+        return;
+      }
+
+      const accountIdInt = parseInt(accountID, 10); // Convert accountID to an integer
+      if (Number.isNaN(accountIdInt)) {
+        console.error('Invalid AccountID: must be a number');
+        return;
+      }
+
+      try {
+        const response = await axios.get(
+          `https://personal-6hjam0f0.outsystemscloud.com/ExchangeCurrency/rest/UserAPI/GetSingleUser?AccountId=${accountIdInt}`
+        );
+        setUserName(response.data.Name); // Set the user name from the API response
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUserName();
+  }, [accountID]);
 
   const handleSignOut = () => {
     console.log('User signed out');
@@ -14,7 +46,7 @@ const Profile = (): React.JSX.Element => {
   };
 
   const toggleModal = () => setShowModal(!showModal);
-  const toggleBalanceModal = () => setShowBalanceModal(!showBalanceModal); // Toggle function for balance modal
+  const toggleBalanceModal = () => setShowBalanceModal(!showBalanceModal);
 
   return (
     <Layout>
@@ -25,8 +57,7 @@ const Profile = (): React.JSX.Element => {
       <div className='account-photo' style={{ backgroundImage: `url("images/profile.jpg")` }} />
 
       <div className='center'>
-        <h2>Thomas Tan</h2>
-        <p className='flex flex-v-center flex-h-center'>@thomastan</p>
+        <h2>{userName || 'Loading...'}</h2> {/* Display fetched user name or 'Loading...' */}
       </div>
 
       {/* Current Balance section with onClick to show currency wallets */}
