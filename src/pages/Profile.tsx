@@ -89,6 +89,22 @@ const Profile = (): React.JSX.Element => {
 
   return (
     <Layout>
+      <div
+        onClick={() => window.history.back()}
+        style={{
+          position: 'absolute',
+          top: '20px',
+          left: '20px',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center'
+        }}
+        className='account-link'
+      >
+        <span className='material-symbols-outlined'>arrow_back</span>
+        <span style={{ marginLeft: '5px' }}>Back</span>
+      </div>
+
       <Divider />
 
       <h1 className='title'>Profile</h1>
