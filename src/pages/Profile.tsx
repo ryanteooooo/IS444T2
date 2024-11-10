@@ -17,6 +17,7 @@ const Profile = (): React.JSX.Element => {
   const [loadingTbankAccount, setLoadingTbankAccount] = useState(false);
   const [linkStatusMessage, setLinkStatusMessage] = useState<string | null>(null);
   const [topUpAmount, setTopUpAmount] = useState<number | ''>('');
+  const [selectedCurrency, setSelectedCurrency] = useState<{ CurrencyCode: string; Amount: number } | null>(null);
 
   const { accountID } = useAuth();
 
@@ -31,7 +32,9 @@ const Profile = (): React.JSX.Element => {
       const response = await axios.get(
         `https://personal-6hjam0f0.outsystemscloud.com/ExchangeCurrency/rest/CurrencyBankAPI/GetSingleAccountCurrencyNew?AccountId=${accountIdInt}`
       );
-      setCurrencies(response.data.Currencies || []);
+      const fetchedCurrencies = response.data.Currencies || [];
+      setCurrencies(fetchedCurrencies);
+      setSelectedCurrency(fetchedCurrencies.length > 0 ? fetchedCurrencies[0] : null);
     } catch (error) {
       console.error('Error fetching currency data:', error);
     } finally {
@@ -151,7 +154,8 @@ const Profile = (): React.JSX.Element => {
 
   useEffect(() => {
     fetchUserName();
-  }, [fetchUserName]);
+    fetchCurrencies();
+  }, [fetchUserName, fetchCurrencies]);
 
   const handleSignOut = () => {
     console.log('User signed out');
@@ -201,8 +205,12 @@ const Profile = (): React.JSX.Element => {
       <div className='balance-display' onClick={toggleBalanceModal} style={{ cursor: 'pointer' }}>
         <span className='material-symbols-outlined'>account_balance_wallet</span>
         <div className='balance-info'>
-          <h2>Current Balance</h2>
-          <h1 className='balance-amount'>$SGD 650.80</h1>
+          <h2>View Owned Currencies</h2>
+          <h1 className='balance-amount'>
+            {selectedCurrency
+              ? `${getCurrencySymbol(selectedCurrency.CurrencyCode)}${selectedCurrency.Amount.toFixed(2)}`
+              : 'No Currencies To Show'}
+          </h1>
         </div>
       </div>
 
@@ -213,18 +221,18 @@ const Profile = (): React.JSX.Element => {
           <div
             onClick={toggleModal}
             className='flex flex-v-center account-link'
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', color: '#fff' }}
           >
-            <span className='material-symbols-outlined'>credit_card</span>
+            <span className='material-symbols-outlined' style={{ color: '#fff' }}>credit_card</span>
             Link Account to Bank
           </div>
         ) : (
           <div
             onClick={toggleTopUpModal}
             className='flex flex-v-center account-link'
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', color: '#fff' }}
           >
-            <span className='material-symbols-outlined'>account_balance_wallet</span>
+            <span className='material-symbols-outlined' style={{ color: '#fff' }}>account_balance_wallet</span>
             Top Up
           </div>
         )}
@@ -233,14 +241,15 @@ const Profile = (): React.JSX.Element => {
       <Divider />
 
       <div className='account'>
-        <div
+        <button
+          type="button"
           onClick={handleSignOut}
           className='flex flex-v-center account-link'
-          style={{ cursor: 'pointer' }}
+          style={{ cursor: 'pointer', color: '#fff' }}
         >
-          <span className='material-symbols-outlined'>power_settings_new</span>
+          <span className='material-symbols-outlined' style={{ color: '#fff' }}>power_settings_new</span>
           Sign Out
-        </div>
+        </button>
       </div>
 
       <Divider />
@@ -269,7 +278,7 @@ const Profile = (): React.JSX.Element => {
                 </p>
               </>
             )}
-            <button type='button' onClick={toggleModal}>
+            <button type="button" onClick={toggleModal}>
               Close
             </button>
           </div>
@@ -280,14 +289,31 @@ const Profile = (): React.JSX.Element => {
         <div className='modal-overlay'>
           <div className='modal-content'>
             <h2>Your Currency Wallets</h2>
-            <ul>
+            <ul style={{ listStyle: 'none', padding: 0 }}>
               {loadingCurrencies && <li>Loading...</li>}
               {!loadingCurrencies &&
                 currencies.length > 0 &&
                 currencies.map((currency) => (
                   <li key={currency.CurrencyCode}>
-                    {currency.CurrencyCode} Wallet: {getCurrencySymbol(currency.CurrencyCode)}
-                    {currency.Amount.toFixed(2)}
+                    <button
+                      type="button"
+                      onClick={() => setSelectedCurrency(currency)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        backgroundColor: selectedCurrency?.CurrencyCode === currency.CurrencyCode ? '#f0f0f0' : 'transparent',
+                        padding: '8px',
+                        borderRadius: '4px',
+                        margin: '4px 0',
+                        border: '1px solid #ccc',
+                        cursor: 'pointer',
+                        width: '100%',
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      {currency.CurrencyCode} Wallet: {getCurrencySymbol(currency.CurrencyCode)}
+                      {currency.Amount.toFixed(2)}
+                    </button>
                   </li>
                 ))}
               {!loadingCurrencies && currencies.length === 0 && (
@@ -295,7 +321,7 @@ const Profile = (): React.JSX.Element => {
               )}
             </ul>
 
-            <button type='button' onClick={toggleBalanceModal}>
+            <button type="button" onClick={toggleBalanceModal}>
               Close
             </button>
           </div>
@@ -313,10 +339,10 @@ const Profile = (): React.JSX.Element => {
               onChange={(e) => setTopUpAmount(parseFloat(e.target.value))}
               placeholder='Enter amount'
             />
-            <button type='button' onClick={handleTopUp}>
+            <button type="button" onClick={handleTopUp}>
               Confirm
             </button>
-            <button type='button' onClick={toggleTopUpModal}>
+            <button type="button" onClick={toggleTopUpModal}>
               Close
             </button>
           </div>
