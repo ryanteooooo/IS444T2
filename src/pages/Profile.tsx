@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useAuth } from '../AuthContext';
 
@@ -9,16 +9,35 @@ import Divider from '../components/Divider/Divider';
 const Profile = (): React.JSX.Element => {
   const [showModal, setShowModal] = useState(false);
   const [showBalanceModal, setShowBalanceModal] = useState(false);
-  const [showTopUpModal, setShowTopUpModal] = useState(false); // New state for top-up modal
+  const [showTopUpModal, setShowTopUpModal] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
   const [currencies, setCurrencies] = useState<{ CurrencyCode: string; Amount: number }[]>([]);
   const [loadingCurrencies, setLoadingCurrencies] = useState(true);
   const [tbankAccountId, setTbankAccountId] = useState<string | null>(null);
   const [loadingTbankAccount, setLoadingTbankAccount] = useState(false);
   const [linkStatusMessage, setLinkStatusMessage] = useState<string | null>(null);
-  const [topUpAmount, setTopUpAmount] = useState<number | ''>(''); // State to store top-up amount
+  const [topUpAmount, setTopUpAmount] = useState<number | ''>('');
 
   const { accountID } = useAuth();
+
+  const fetchCurrencies = useCallback(async () => {
+    if (!accountID) return;
+
+    const accountIdInt = parseInt(accountID, 10);
+    if (Number.isNaN(accountIdInt)) return;
+
+    setLoadingCurrencies(true);
+    try {
+      const response = await axios.get(
+        `https://personal-6hjam0f0.outsystemscloud.com/ExchangeCurrency/rest/CurrencyBankAPI/GetSingleAccountCurrencyNew?AccountId=${accountIdInt}`
+      );
+      setCurrencies(response.data.Currencies || []);
+    } catch (error) {
+      console.error('Error fetching currency data:', error);
+    } finally {
+      setLoadingCurrencies(false);
+    }
+  }, [accountID]);
 
   const fetchTbankAccountId = async () => {
     if (!accountID) {
@@ -33,14 +52,14 @@ const Profile = (): React.JSX.Element => {
     }
 
     setLoadingTbankAccount(true);
-    setLinkStatusMessage(null); // Reset message when re-fetching
+    setLinkStatusMessage(null);
     try {
       const response = await axios.get(
         `https://personal-6hjam0f0.outsystemscloud.com/ExchangeCurrency/rest/UserAPI/LinkTbankAccountAPI?AccountId=${accountIdInt}`
       );
       const accountId = response.data.TbankAccountId || '0';
       setTbankAccountId(accountId);
-      
+
       if (accountId !== '0' && accountId !== '') {
         setLinkStatusMessage('Successfully linked!');
       } else {
@@ -71,16 +90,17 @@ const Profile = (): React.JSX.Element => {
   const toggleModal = async () => {
     setShowModal(!showModal);
     if (showModal) {
-      // Modal is closing, check the updated TbankAccountId
       await checkTbankAccountStatus();
     } else {
-      // Modal is opening, initiate linking process
       await fetchTbankAccountId();
     }
   };
 
-  const toggleBalanceModal = () => {
+  const toggleBalanceModal = async () => {
     setShowBalanceModal(!showBalanceModal);
+    if (!showBalanceModal) {
+      await fetchCurrencies();
+    }
   };
 
   const toggleTopUpModal = () => {
@@ -105,74 +125,39 @@ const Profile = (): React.JSX.Element => {
         }
       );
       console.log('Top up successful:', response.data);
-      setTopUpAmount(''); // Reset the amount after success
-      toggleTopUpModal(); // Close the modal after success
+      setTopUpAmount('');
+      toggleTopUpModal();
     } catch (error) {
       console.error('Error during top up:', error);
     }
   };
 
+  const fetchUserName = useCallback(async () => {
+    if (!accountID) return;
+
+    const accountIdInt = parseInt(accountID, 10);
+    if (Number.isNaN(accountIdInt)) return;
+
+    try {
+      const response = await axios.get(
+        `https://personal-6hjam0f0.outsystemscloud.com/ExchangeCurrency/rest/UserAPI/GetSingleUser?AccountId=${accountIdInt}`
+      );
+      setUserName(response.data.Name);
+      setTbankAccountId(response.data.TbankAccountId || '0');
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  }, [accountID]);
+
   useEffect(() => {
-    const fetchUserName = async () => {
-      if (!accountID) {
-        console.error('Account ID is not set');
-        return;
-      }
-
-      const accountIdInt = parseInt(accountID, 10);
-      if (Number.isNaN(accountIdInt)) {
-        console.error('Invalid AccountID: must be a number');
-        return;
-      }
-
-      try {
-        const response = await axios.get(
-          `https://personal-6hjam0f0.outsystemscloud.com/ExchangeCurrency/rest/UserAPI/GetSingleUser?AccountId=${accountIdInt}`
-        );
-        setUserName(response.data.Name);
-        setTbankAccountId(response.data.TbankAccountId || '0'); // Set initial TbankAccountId
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    };
-
     fetchUserName();
-  }, [accountID]);
-
-  useEffect(() => {
-    const fetchCurrencies = async () => {
-      if (!accountID) {
-        console.error('Account ID is not set');
-        return;
-      }
-
-      const accountIdInt = parseInt(accountID, 10);
-      if (Number.isNaN(accountIdInt)) {
-        console.error('Invalid AccountID: must be a number');
-        return;
-      }
-
-      try {
-        const response = await axios.get(
-          `https://personal-6hjam0f0.outsystemscloud.com/ExchangeCurrency/rest/CurrencyBankAPI/GetSingleAccountCurrencyNew?AccountId=${accountIdInt}`
-        );
-        setCurrencies(response.data.Currencies || []);
-      } catch (error) {
-        console.error('Error fetching currency data:', error);
-      } finally {
-        setLoadingCurrencies(false);
-      }
-    };
-
-    fetchCurrencies();
-  }, [accountID]);
+  }, [fetchUserName]);
 
   const handleSignOut = () => {
     console.log('User signed out');
     window.location.href = 'http://localhost:3000/';
   };
 
-  // Helper function to get the currency symbol
   const getCurrencySymbol = (currencyCode: string) => {
     const symbols: { [key: string]: string } = {
       USD: '$',
