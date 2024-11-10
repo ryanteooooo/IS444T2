@@ -36,8 +36,14 @@ const Profile = (): React.JSX.Element => {
       const response = await axios.get(
         `https://personal-6hjam0f0.outsystemscloud.com/ExchangeCurrency/rest/UserAPI/LinkTbankAccountAPI?AccountId=${accountIdInt}`
       );
-      setTbankAccountId(response.data.TbankAccountId || 'Not available');
-      setLinkStatusMessage('Successfully linked!');
+      const accountId = response.data.TbankAccountId || '0';
+      setTbankAccountId(accountId);
+      
+      if (accountId !== '0' && accountId !== '') {
+        setLinkStatusMessage('Successfully linked!');
+      } else {
+        setLinkStatusMessage('Failed to Link');
+      }
     } catch (error) {
       console.error('Error fetching TbankAccountId:', error);
       setLinkStatusMessage('Failed to Link');
@@ -46,10 +52,28 @@ const Profile = (): React.JSX.Element => {
     }
   };
 
+  const checkTbankAccountStatus = async () => {
+    if (!accountID) return;
+
+    try {
+      const response = await axios.get(
+        `https://personal-6hjam0f0.outsystemscloud.com/ExchangeCurrency/rest/UserAPI/LinkTbankAccountAPI?AccountId=${accountID}`
+      );
+      const accountId = response.data.TbankAccountId || '0';
+      setTbankAccountId(accountId);
+    } catch (error) {
+      console.error('Error checking Tbank account status:', error);
+    }
+  };
+
   const toggleModal = async () => {
     setShowModal(!showModal);
-    if (!showModal) {
-      await fetchTbankAccountId(); // Fetch TbankAccountId when opening the modal
+    if (showModal) {
+      // Modal is closing, check the updated TbankAccountId
+      await checkTbankAccountStatus();
+    } else {
+      // Modal is opening, initiate linking process
+      await fetchTbankAccountId();
     }
   };
 
@@ -75,6 +99,7 @@ const Profile = (): React.JSX.Element => {
           `https://personal-6hjam0f0.outsystemscloud.com/ExchangeCurrency/rest/UserAPI/GetSingleUser?AccountId=${accountIdInt}`
         );
         setUserName(response.data.Name);
+        setTbankAccountId(response.data.TbankAccountId || '0'); // Set initial TbankAccountId
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
@@ -168,14 +193,25 @@ const Profile = (): React.JSX.Element => {
       <Divider />
 
       <div className='account'>
-        <div
-          onClick={toggleModal}
-          className='flex flex-v-center account-link'
-          style={{ cursor: 'pointer' }}
-        >
-          <span className='material-symbols-outlined'>credit_card</span>
-          Link Account to Bank
-        </div>
+        {tbankAccountId === '0' || tbankAccountId === '' ? (
+          <div
+            onClick={toggleModal}
+            className='flex flex-v-center account-link'
+            style={{ cursor: 'pointer' }}
+          >
+            <span className='material-symbols-outlined'>credit_card</span>
+            Link Account to Bank
+          </div>
+        ) : (
+          <div
+            onClick={() => alert('Top up functionality here')}
+            className='flex flex-v-center account-link'
+            style={{ cursor: 'pointer' }}
+          >
+            <span className='material-symbols-outlined'>account_balance_wallet</span>
+            Top Up
+          </div>
+        )}
       </div>
 
       <Divider />
@@ -203,13 +239,13 @@ const Profile = (): React.JSX.Element => {
 
       {showModal && (
         <div className='modal-overlay'>
-          <div className='modal-content' style={{ color: '#000' }}> {/* Setting default text color */}
+          <div className='modal-content' style={{ color: '#000' }}>
             <h2>Link Account to Bank</h2>
             {loadingTbankAccount ? (
               <p>Loading Tbank Account ID...</p>
             ) : (
               <>
-                <p style={{ color: '#000' }}> {/* Black text for account ID */}
+                <p style={{ color: '#000' }}>
                   Tbank Account ID: {tbankAccountId}
                 </p>
                 <p style={{ color: linkStatusMessage === 'Successfully linked!' ? '#28a745' : '#dc3545' }}>
