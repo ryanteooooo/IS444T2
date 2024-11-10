@@ -9,12 +9,14 @@ import Divider from '../components/Divider/Divider';
 const Profile = (): React.JSX.Element => {
   const [showModal, setShowModal] = useState(false);
   const [showBalanceModal, setShowBalanceModal] = useState(false);
+  const [showTopUpModal, setShowTopUpModal] = useState(false); // New state for top-up modal
   const [userName, setUserName] = useState<string | null>(null);
   const [currencies, setCurrencies] = useState<{ CurrencyCode: string; Amount: number }[]>([]);
   const [loadingCurrencies, setLoadingCurrencies] = useState(true);
   const [tbankAccountId, setTbankAccountId] = useState<string | null>(null);
   const [loadingTbankAccount, setLoadingTbankAccount] = useState(false);
   const [linkStatusMessage, setLinkStatusMessage] = useState<string | null>(null);
+  const [topUpAmount, setTopUpAmount] = useState<number | ''>(''); // State to store top-up amount
 
   const { accountID } = useAuth();
 
@@ -79,6 +81,35 @@ const Profile = (): React.JSX.Element => {
 
   const toggleBalanceModal = () => {
     setShowBalanceModal(!showBalanceModal);
+  };
+
+  const toggleTopUpModal = () => {
+    setShowTopUpModal(!showTopUpModal);
+  };
+
+  const handleTopUp = async () => {
+    if (!accountID || topUpAmount === '') return;
+
+    const accountIdInt = parseInt(accountID, 10);
+    if (Number.isNaN(accountIdInt)) {
+      console.error('Invalid AccountID: must be a number');
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        'https://personal-6hjam0f0.outsystemscloud.com/TransferMoney/rest/TransferMoneyComposite/AccountTopFromTBank',
+        {
+          AccountId: accountIdInt,
+          AmountSGD: topUpAmount,
+        }
+      );
+      console.log('Top up successful:', response.data);
+      setTopUpAmount(''); // Reset the amount after success
+      toggleTopUpModal(); // Close the modal after success
+    } catch (error) {
+      console.error('Error during top up:', error);
+    }
   };
 
   useEffect(() => {
@@ -204,7 +235,7 @@ const Profile = (): React.JSX.Element => {
           </div>
         ) : (
           <div
-            onClick={() => alert('Top up functionality here')}
+            onClick={toggleTopUpModal}
             className='flex flex-v-center account-link'
             style={{ cursor: 'pointer' }}
           >
@@ -280,6 +311,27 @@ const Profile = (): React.JSX.Element => {
             </ul>
 
             <button type='button' onClick={toggleBalanceModal}>
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showTopUpModal && (
+        <div className='modal-overlay'>
+          <div className='modal-content' style={{ color: '#000' }}>
+            <h2>Top Up Account</h2>
+            <label>Amount in SGD:</label>
+            <input
+              type='number'
+              value={topUpAmount}
+              onChange={(e) => setTopUpAmount(parseFloat(e.target.value))}
+              placeholder='Enter amount'
+            />
+            <button type='button' onClick={handleTopUp}>
+              Confirm
+            </button>
+            <button type='button' onClick={toggleTopUpModal}>
               Close
             </button>
           </div>
