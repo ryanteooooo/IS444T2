@@ -159,7 +159,7 @@ const Profile = (): React.JSX.Element => {
 
   const handleSignOut = () => {
     console.log('User signed out');
-    window.location.href = 'http://localhost:3000/';
+    window.location.href = '/';
   };
 
   const getCurrencySymbol = (currencyCode: string) => {
