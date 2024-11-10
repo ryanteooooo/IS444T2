@@ -9,8 +9,8 @@ interface AuthContextType {
     setUserEmail: React.Dispatch<React.SetStateAction<string | null>>;
     userTbankAccountId: string | null;
     setTbankAccountId: React.Dispatch<React.SetStateAction<string | null>>;
-    userPhone: string | null;
-    setUserPhone: React.Dispatch<React.SetStateAction<string | null>>;
+    userPhoneNumber: string | null;
+    setUserPhoneNumber: React.Dispatch<React.SetStateAction<string | null>>;
     logout: () => void;
 }
 
@@ -21,19 +21,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [userName, setUserName] = useState<string | null>(null);
     const [userEmail, setUserEmail] = useState<string | null>(null);
     const [userTbankAccountId, setTbankAccountId] = useState<string | null>(null);
-    const [userPhone, setUserPhone] = useState<string | null>(null);
+    const [userPhoneNumber, setUserPhoneNumber] = useState<string | null>(null);
 
     const logout = () => {
         setAccountID(null);
         setUserName(null);
         setUserEmail(null);
         setTbankAccountId(null);
-        setUserPhone(null);
+        setUserPhoneNumber(null);
     };
 
     const value = React.useMemo(
-        () => ({ accountID, setAccountID, userName, setUserName, userEmail, setUserEmail, userTbankAccountId, setTbankAccountId, userPhone, setUserPhone, logout }),
-        [accountID, userName, userEmail, userTbankAccountId, userPhone]
+        () => ({ accountID, setAccountID, userName, setUserName, userEmail, setUserEmail, userTbankAccountId, setTbankAccountId, userPhoneNumber, setUserPhoneNumber, logout }),
+        [accountID, userName, userEmail, userTbankAccountId, userPhoneNumber]
     );
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

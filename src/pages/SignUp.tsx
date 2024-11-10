@@ -8,8 +8,8 @@ import Input from '../components/Form/Input';
 import Button from '../components/Form/Button';
 
 const SignUp = (): React.JSX.Element => { 
-    const [formData, setFormData] = useState({ name: '', email: '', password: '', phone: '' });
-    const { setAccountID, setUserName, setUserEmail, setUserPhone } = useAuth();
+    const [formData, setFormData] = useState({ name: '', email: '', password: '', phonenumber: '' });
+    const { setAccountID, setUserName, setUserEmail, setUserPhoneNumber } = useAuth();
     const navigate = useNavigate();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,7 +25,7 @@ const SignUp = (): React.JSX.Element => {
                 setAccountID(response.data.AccountId.toString());
                 setUserName(response.data.Name);
                 setUserEmail(response.data.Email);
-                setUserPhone(response.data.Phone); // Assuming `Phone` is returned in the response
+                setUserPhoneNumber(response.data.PhoneNumber); // Assuming `Phone` is returned in the response
                 navigate('/home');
             } else {
                 alert('Sign-up failed');
@@ -91,14 +91,14 @@ const SignUp = (): React.JSX.Element => {
                     </div>
                     <div className='form-line'>
                         <div className='label-line'>
-                            <label htmlFor='phone' className='text-shadow' style={{ color: 'white' }}>
+                            <label htmlFor='phonenumber' className='text-shadow' style={{ color: 'white' }}>
                                 Phone
                             </label>
                         </div>
                         <Input
                             required
                             tabIndex={0}
-                            name='phone'
+                            name='phonenumber'
                             type='tel'
                             placeholder='Please enter your phone number'
                             onChange={handleChange}
