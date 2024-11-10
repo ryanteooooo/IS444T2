@@ -5,6 +5,7 @@ import { AUTH_HEADER } from '../../apiConfig';
 import Layout from '../../components/Layout/Layout';
 import Actions from '../../components/Actions/Actions';
 import Divider from '../../components/Divider/Divider';
+import Currency from '../../components/Currency/Currency';
 
 const ExchangeSection = (): React.JSX.Element => {
   const { accountID: accountId } = useAuth();
@@ -199,7 +200,7 @@ const ExchangeSection = (): React.JSX.Element => {
               </div>
               <div className='s-row'>
                 <div className='col balance'>Balance: {balance}</div>
-                <div className='col live-rate'>Live Rate: {liveRate}</div>
+                <div className='col live-rate'>Live Rate: 1 SGD = {liveRate} {selectedCurrency}</div>
               </div>
               <div className='row' />
               <div className='row'>
