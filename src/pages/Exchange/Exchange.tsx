@@ -5,9 +5,10 @@ import { AUTH_HEADER } from '../../apiConfig';
 import Layout from '../../components/Layout/Layout';
 import Actions from '../../components/Actions/Actions';
 import Divider from '../../components/Divider/Divider';
+import Currency from '../../components/Currency/Currency';
 
 const ExchangeSection = (): React.JSX.Element => {
-  const { accountID: accountId } = useAuth();
+  const { accountID: accountId, setLatestCurrencyChanged } = useAuth();
   const [activeTab, setActiveTab] = useState<'exchange' | 'limit' | 'status'>('exchange');
   const [liveRate, setLiveRate] = useState<number>(0);
   const [exchangeRate, setExchangeRate] = useState<number>(0);
@@ -16,10 +17,10 @@ const ExchangeSection = (): React.JSX.Element => {
   const [limitOrders, setLimitOrders] = useState<any[]>([]);
   const [paymentAmount, setPaymentAmount] = useState<number>(0);
   const [balance, setBalance] = useState<string>('N/A');
-  const [sgdBalance, setSgdBalance] = useState<number>(0); // State for SGD balance
-  const [message, setMessage] = useState<string>(''); // State for output message
-  const [isLoading, setIsLoading] = useState<boolean>(false); // State for loading animation
-  const [rateLocks, setRateLocks] = useState<any[]>([]); // State for rate lock transactions
+  const [sgdBalance, setSgdBalance] = useState<number>(0);
+  const [message, setMessage] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [rateLocks, setRateLocks] = useState<any[]>([]);
 
   const currencies = ['USD', 'EUR', 'GBP', 'THB'];
 
@@ -31,7 +32,6 @@ const ExchangeSection = (): React.JSX.Element => {
       const currencyData = data.Currencies.find((c: any) => c.CurrencyCode === currency);
       setBalance(currencyData ? currencyData.Amount.toFixed(2) : 'N/A');
 
-      // Find and set the SGD balance
       const sgdData = data.Currencies.find((c: any) => c.CurrencyCode === 'SGD');
       setSgdBalance(sgdData ? sgdData.Amount : 0);
     } catch (error) {
@@ -49,12 +49,8 @@ const ExchangeSection = (): React.JSX.Element => {
       const data = await response.json();
       console.log('Live rate data:', data);
 
-      // Set the live rate with 5 decimal places
-      setLiveRate(parseFloat(Number(data.rate).toFixed(5)));  // Round to 5 decimal places and convert back to number
-
-      // Initialize exchange rate with live rate
-      setExchangeRate(parseFloat(Number(data.rate).toFixed(5)));  // Round to 5 decimal places and convert back to number
-
+      setLiveRate(parseFloat(Number(data.rate).toFixed(5)));
+      setExchangeRate(parseFloat(Number(data.rate).toFixed(5)));
     } catch (error) {
       console.error('Error fetching live rate:', error);
     }
@@ -89,7 +85,7 @@ const ExchangeSection = (): React.JSX.Element => {
       return;
     }
 
-    setIsLoading(true); // Start loading animation
+    setIsLoading(true);
     const startTime = Date.now();
 
     try {
@@ -114,12 +110,13 @@ const ExchangeSection = (): React.JSX.Element => {
       });
       const data = await response.json();
       const elapsedTime = Date.now() - startTime;
-      const remainingTime = Math.max(0, 1000 - elapsedTime); // Ensure at least 1 second delay
+      const remainingTime = Math.max(0, 1000 - elapsedTime);
 
       setTimeout(() => {
-        setIsLoading(false); // Stop loading animation
+        setIsLoading(false);
         if (response.ok) {
           setMessage('Exchange submitted successfully!');
+          setLatestCurrencyChanged(selectedCurrency); // Update the latest currency changed
         } else {
           setMessage('Error submitting exchange.');
         }
@@ -138,11 +135,11 @@ const ExchangeSection = (): React.JSX.Element => {
         .then((response) => response.json())
         .then((data) => {
           console.log('Fetched rate locks:', data);
-          setRateLocks(Array.isArray(data) ? data : []); // Set to an empty array if data is not an array
+          setRateLocks(Array.isArray(data) ? data : []);
         })
         .catch((error) => console.error('Error fetching rate locks:', error));
     }
-  }, [activeTab]); // Fetch rate locks when the status tab is active
+  }, [activeTab]);
 
   return (
     <div className={`exchange-section ${isLoading ? 'blur' : ''}`}>
@@ -199,7 +196,7 @@ const ExchangeSection = (): React.JSX.Element => {
               </div>
               <div className='s-row'>
                 <div className='col balance'>Balance: {balance}</div>
-                <div className='col live-rate'>Live Rate: {liveRate}</div>
+                <div className='col live-rate'>Live Rate: 1 SGD = {liveRate} {selectedCurrency}</div>
               </div>
               <div className='row' />
               <div className='row'>
