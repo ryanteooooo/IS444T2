@@ -11,6 +11,7 @@ const Profile = (): React.JSX.Element => {
   const [showBalanceModal, setShowBalanceModal] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
   const [currencies, setCurrencies] = useState<{ CurrencyCode: string; Amount: number }[]>([]);
+  const [loadingCurrencies, setLoadingCurrencies] = useState(true); // New state to track loading
 
   const { accountID } = useAuth();
 
@@ -57,9 +58,11 @@ const Profile = (): React.JSX.Element => {
         const response = await axios.get(
           `https://personal-6hjam0f0.outsystemscloud.com/ExchangeCurrency/rest/CurrencyBankAPI/GetSingleAccountCurrencyNew?AccountId=${accountIdInt}`
         );
-        setCurrencies(response.data.Currencies);
+        setCurrencies(response.data.Currencies || []); // Ensure currencies is an array
       } catch (error) {
         console.error('Error fetching currency data:', error);
+      } finally {
+        setLoadingCurrencies(false); // Stop loading once the fetch completes
       }
     };
 
@@ -82,7 +85,7 @@ const Profile = (): React.JSX.Element => {
       GBP: '£',
       SGD: 'S$',
       AUD: 'A$',
-      THB: '฿'
+      THB: '฿',
     };
     return symbols[currencyCode] || '';
   };
@@ -97,7 +100,7 @@ const Profile = (): React.JSX.Element => {
           left: '20px',
           cursor: 'pointer',
           display: 'flex',
-          alignItems: 'center'
+          alignItems: 'center',
         }}
         className='account-link'
       >
@@ -187,17 +190,20 @@ const Profile = (): React.JSX.Element => {
           <div className='modal-content'>
             <h2>Your Currency Wallets</h2>
             <ul>
-              {currencies.length > 0 ? (
+              {loadingCurrencies && <li>Loading...</li>}
+              {!loadingCurrencies &&
+                currencies.length > 0 &&
                 currencies.map((currency) => (
                   <li key={currency.CurrencyCode}>
                     {currency.CurrencyCode} Wallet: {getCurrencySymbol(currency.CurrencyCode)}
                     {currency.Amount.toFixed(2)}
                   </li>
-                ))
-              ) : (
-                <li>Loading...</li>
+                ))}
+              {!loadingCurrencies && currencies.length === 0 && (
+                <li>No currencies found for your account.</li>
               )}
             </ul>
+
             <button type='button' onClick={toggleBalanceModal}>
               Close
             </button>
