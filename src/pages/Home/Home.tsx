@@ -27,6 +27,17 @@ interface IAccountData {
 
 
 const History = (): React.JSX.Element => {
+
+  const {latestCurrencyChanged } = useAuth();
+  // ... existing code ...
+
+  useEffect(() => {
+    console.log('Latest Currency Changed:', latestCurrencyChanged);
+  }, [latestCurrencyChanged]);
+
+
+
+
   const { accountID:accountId } = useAuth();
   // const accountId = "6"; // simulate accountID
   const [activeTab, setActiveTab] = useState<'spending' | 'addPayment'>('spending');
