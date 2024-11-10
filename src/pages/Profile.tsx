@@ -11,9 +11,51 @@ const Profile = (): React.JSX.Element => {
   const [showBalanceModal, setShowBalanceModal] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
   const [currencies, setCurrencies] = useState<{ CurrencyCode: string; Amount: number }[]>([]);
-  const [loadingCurrencies, setLoadingCurrencies] = useState(true); // New state to track loading
+  const [loadingCurrencies, setLoadingCurrencies] = useState(true);
+  const [tbankAccountId, setTbankAccountId] = useState<string | null>(null);
+  const [loadingTbankAccount, setLoadingTbankAccount] = useState(false);
+  const [linkStatusMessage, setLinkStatusMessage] = useState<string | null>(null);
 
   const { accountID } = useAuth();
+
+  const fetchTbankAccountId = async () => {
+    if (!accountID) {
+      console.error('Account ID is not set');
+      return;
+    }
+
+    const accountIdInt = parseInt(accountID, 10);
+    if (Number.isNaN(accountIdInt)) {
+      console.error('Invalid AccountID: must be a number');
+      return;
+    }
+
+    setLoadingTbankAccount(true);
+    setLinkStatusMessage(null); // Reset message when re-fetching
+    try {
+      const response = await axios.get(
+        `https://personal-6hjam0f0.outsystemscloud.com/ExchangeCurrency/rest/UserAPI/LinkTbankAccountAPI?AccountId=${accountIdInt}`
+      );
+      setTbankAccountId(response.data.TbankAccountId || 'Not available');
+      setLinkStatusMessage('Successfully linked!');
+    } catch (error) {
+      console.error('Error fetching TbankAccountId:', error);
+      setLinkStatusMessage('Failed to Link');
+    } finally {
+      setLoadingTbankAccount(false);
+    }
+  };
+
+  const toggleModal = async () => {
+    setShowModal(!showModal);
+    if (!showModal) {
+      await fetchTbankAccountId(); // Fetch TbankAccountId when opening the modal
+    }
+  };
+
+  const toggleBalanceModal = () => {
+    setShowBalanceModal(!showBalanceModal);
+  };
 
   useEffect(() => {
     const fetchUserName = async () => {
@@ -58,11 +100,11 @@ const Profile = (): React.JSX.Element => {
         const response = await axios.get(
           `https://personal-6hjam0f0.outsystemscloud.com/ExchangeCurrency/rest/CurrencyBankAPI/GetSingleAccountCurrencyNew?AccountId=${accountIdInt}`
         );
-        setCurrencies(response.data.Currencies || []); // Ensure currencies is an array
+        setCurrencies(response.data.Currencies || []);
       } catch (error) {
         console.error('Error fetching currency data:', error);
       } finally {
-        setLoadingCurrencies(false); // Stop loading once the fetch completes
+        setLoadingCurrencies(false);
       }
     };
 
@@ -73,9 +115,6 @@ const Profile = (): React.JSX.Element => {
     console.log('User signed out');
     window.location.href = 'http://localhost:3000/';
   };
-
-  const toggleModal = () => setShowModal(!showModal);
-  const toggleBalanceModal = () => setShowBalanceModal(!showBalanceModal);
 
   // Helper function to get the currency symbol
   const getCurrencySymbol = (currencyCode: string) => {
@@ -164,23 +203,23 @@ const Profile = (): React.JSX.Element => {
 
       {showModal && (
         <div className='modal-overlay'>
-          <div className='modal-content'>
-            <h2>Add Bank Card</h2>
-            <form>
-              <label>Card Number:</label>
-              <input type='text' placeholder='1234 5678 9012 3456' />
-
-              <label>Expiry Date:</label>
-              <input type='text' placeholder='MM/YY' />
-
-              <label>CVV:</label>
-              <input type='text' placeholder='123' />
-
-              <button type='button' onClick={toggleModal}>
-                Close
-              </button>
-              <button type='submit'>Add Card</button>
-            </form>
+          <div className='modal-content' style={{ color: '#000' }}> {/* Setting default text color */}
+            <h2>Link Account to Bank</h2>
+            {loadingTbankAccount ? (
+              <p>Loading Tbank Account ID...</p>
+            ) : (
+              <>
+                <p style={{ color: '#000' }}> {/* Black text for account ID */}
+                  Tbank Account ID: {tbankAccountId}
+                </p>
+                <p style={{ color: linkStatusMessage === 'Successfully linked!' ? '#28a745' : '#dc3545' }}>
+                  {linkStatusMessage}
+                </p>
+              </>
+            )}
+            <button type='button' onClick={toggleModal}>
+              Close
+            </button>
           </div>
         </div>
       )}
