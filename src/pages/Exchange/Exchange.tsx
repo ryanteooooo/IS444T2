@@ -2,16 +2,18 @@ import React, { useState, useEffect, useCallback } from 'react';
 import './Exchange.css';
 import { useAuth } from '../../AuthContext';
 import { AUTH_HEADER } from '../../apiConfig';
+import { useCurrency } from '../CurrencyContext'; 
 import Layout from '../../components/Layout/Layout';
 import Actions from '../../components/Actions/Actions';
 import Divider from '../../components/Divider/Divider';
 
 const ExchangeSection = (): React.JSX.Element => {
   const { accountID: accountId } = useAuth();
+  const { setSelectedCurrency } = useCurrency(); // Use setSelectedCurrency from context
   const [activeTab, setActiveTab] = useState<'exchange' | 'limit' | 'status'>('exchange');
   const [liveRate, setLiveRate] = useState<number>(0);
   const [exchangeRate, setExchangeRate] = useState<number>(0);
-  const [selectedCurrency, setSelectedCurrency] = useState<string>('');
+  const [localCurrency, setLocalCurrency] = useState<string>(''); // Local state for selected currency
   const [transactions, setTransactions] = useState<any[]>([]);
   const [limitOrders, setLimitOrders] = useState<any[]>([]);
   const [paymentAmount, setPaymentAmount] = useState<number>(0);
@@ -61,18 +63,18 @@ const ExchangeSection = (): React.JSX.Element => {
   }, []);
 
   useEffect(() => {
-    if (selectedCurrency) {
-      fetchBalance(selectedCurrency);
-      fetchLiveRate(selectedCurrency);
+    if (localCurrency) {
+      fetchBalance(localCurrency);
+      fetchLiveRate(localCurrency);
     }
-  }, [selectedCurrency, fetchBalance, fetchLiveRate]);
+  }, [localCurrency, fetchBalance, fetchLiveRate]);
 
   const handleLiveExchangeSubmit = async () => {
     if (!accountId) {
       setMessage('Account ID is missing.');
       return;
     }
-    if (!selectedCurrency) {
+    if (!localCurrency) {
       setMessage('Please select a currency.');
       return;
     }
@@ -95,10 +97,11 @@ const ExchangeSection = (): React.JSX.Element => {
     try {
       console.log('Submitting exchange:', {
         AccountId: accountId,
-        Currency: selectedCurrency,
+        Currency: localCurrency,
         X_Rate: exchangeRate,
         Amount: paymentAmount,
       });
+
       const response = await fetch('https://personal-6hjam0f0.outsystemscloud.com/NewExchangeCurrencyLocker/rest/RateLockAPI/CompositeNewRateLock', {
         method: 'POST',
         headers: {
@@ -107,11 +110,12 @@ const ExchangeSection = (): React.JSX.Element => {
         },
         body: JSON.stringify({
           AccountId: accountId,
-          Currency: selectedCurrency,
+          Currency: localCurrency,
           X_Rate: exchangeRate,
           Amount: paymentAmount,
         }),
       });
+
       const data = await response.json();
       const elapsedTime = Date.now() - startTime;
       const remainingTime = Math.max(0, 1000 - elapsedTime); // Ensure at least 1 second delay
@@ -125,184 +129,54 @@ const ExchangeSection = (): React.JSX.Element => {
         }
         console.log('Exchange submitted:', data);
       }, remainingTime);
+
+      // Set the global currency in context after successful submission
+      setSelectedCurrency(localCurrency);
+
     } catch (error) {
       console.error('Error submitting exchange:', error);
+      setMessage('An error occurred while submitting the exchange.');
       setIsLoading(false);
-      setMessage('Error submitting exchange.');
     }
   };
 
-  useEffect(() => {
-    if (activeTab === 'status') {
-      fetch('https://personal-6hjam0f0.outsystemscloud.com/ExchangeCurrency/rest/RateAPI/GetIndividualRateLock?AccountId=13')
-        .then((response) => response.json())
-        .then((data) => {
-          console.log('Fetched rate locks:', data);
-          setRateLocks(Array.isArray(data) ? data : []); // Set to an empty array if data is not an array
-        })
-        .catch((error) => console.error('Error fetching rate locks:', error));
-    }
-  }, [activeTab]); // Fetch rate locks when the status tab is active
-
   return (
-    <div className={`exchange-section ${isLoading ? 'blur' : ''}`}>
-      {isLoading && (
-        <div className='progress-icon'>
-          <span className='material-symbols-outlined' style={{ fontSize: '48px' }}>
-            progress_activity
-          </span>
-        </div>
-      )}
-      <div className='tabs flex flex-space-between'>
-        <div className='rectangle no-select flex flex-space-between'>
-          <button
-            type='button'
-            className={`tab-button ${activeTab === 'exchange' ? 'active' : ''}`}
-            onClick={() => setActiveTab('exchange')}
-          >
-            Exchange
-          </button>
-          <button
-            type='button'
-            className={`tab-button ${activeTab === 'status' ? 'active' : ''}`}
-            onClick={() => setActiveTab('status')}
-          >
-            Status
-          </button>
-        </div>
-      </div>
-
+    <Layout>
+      <Actions />
       <Divider />
-
-      <div className='exchange-container'>
-        {activeTab === 'exchange' && (
-          <div className='exchange-tab'>
-            <div className='exchange-inputs'>
-              <div className='row' />
-              <div className='row' />
-              <div className='row'>
-                <div className='col'>Select Currency:</div>
-                <div className='col'>
-                  <select
-                    value={selectedCurrency}
-                    onChange={(e) => setSelectedCurrency(e.target.value)}
-                    className='currency-select'
-                  >
-                    <option value=''>Select currency</option>
-                    {currencies.map((currency) => (
-                      <option key={currency} value={currency}>
-                        {currency}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div className='s-row'>
-                <div className='col balance'>Balance: {balance}</div>
-                <div className='col live-rate'>Live Rate: {liveRate}</div>
-              </div>
-              <div className='row' />
-              <div className='row'>
-                <div className='col'>Exchange Rate:</div>
-                <div className='col'>
-                  <input
-                    type='number'
-                    value={exchangeRate}
-                    onChange={(e) => setExchangeRate(Number(e.target.value))}
-                    className='rate-input-edit'
-                  />
-                </div>
-              </div>
-              <div className='row'>
-                <div className='col'>Change Amount:</div>
-                <div className='col input-with-currency'>
-                  <input
-                    type='number'
-                    value={paymentAmount}
-                    onChange={(e) => setPaymentAmount(Number(e.target.value))}
-                    className='amount-input'
-                  />
-                  <span className='currency-label'>SGD</span>
-                </div>
-              </div>
-              <div className='row' />
-              <div className='row'>
-                <div className='col'>Estimated Amount:</div>
-                <div className='col'>
-                  <span className='converted-amount'>
-                    {(paymentAmount * exchangeRate).toFixed(2)}
-                  </span>
-                </div>
-              </div>
-              <div className='submit-button-container'>
-                <button type='button' onClick={handleLiveExchangeSubmit} className='submit-button'>
-                  Submit
-                </button>
-              </div>
-              {message && <p className='message'>{message}</p>}
-              <div className='row' />
-              <div className='row' />
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'status' && (
-          <div className='status-tab'>
-            <ul>
-              {rateLocks.map((rateLock) => (
-                <li key={rateLock.RateLockTxnId}>
-                  <div className='transaction-card'>
-                    <div className='icon'>
-                      <span className='material-symbols-outlined'>
-                        {rateLock.Exchange_Status === 'Pending' ? 'preliminary' : 'check_circle'}
-                      </span>
-                    </div>
-                    <div className='history-row'>
-                      <div className='history-col' style={{ fontWeight: 'bold' }}>
-                        <span className='label'>Last updated Date:</span>
-                        <span className='value'>{new Date(rateLock.DateTime).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
-                      </div>
-                    </div>
-                    <div className='history-row'>
-                      <div className='history-col'>
-                        <span className='label'>Currency:</span>
-                        <span className='value'>{rateLock.Currency}</span>
-                      </div>
-                      <div className='history-col'>
-                        <span className='label'>Rate:</span>
-                        <span className='value'>{rateLock.X_Rate}</span>
-                      </div>
-                    </div>
-                    <div className='history-row'>
-                      <div className='history-col'>
-                        <span className='label'>Amount:</span>
-                        <span className='value'>{rateLock.Amount.toFixed(2)}</span>
-                      </div>
-                      <div className='history-col'>
-                        <span className='label'>Status:</span>
-                        <span className='value'>{rateLock.Exchange_Status}</span>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+      
+      <h1>Exchange Currency</h1>
+      <div>
+        <label>Select Currency:</label>
+        <select
+          value={localCurrency}
+          onChange={(e) => setLocalCurrency(e.target.value)}
+        >
+          <option value="" disabled>Select a currency</option>
+          {currencies.map((currency) => (
+            <option key={currency} value={currency}>
+              {currency}
+            </option>
+          ))}
+        </select>
       </div>
-    </div>
+      
+      <div>
+        <label>Amount:</label>
+        <input
+          type="number"
+          value={paymentAmount}
+          onChange={(e) => setPaymentAmount(parseFloat(e.target.value))}
+        />
+      </div>
+
+      <button type='button' onClick={handleLiveExchangeSubmit} disabled={isLoading}>
+        {isLoading ? 'Processing...' : 'Submit Exchange'}
+      </button>
+
+      <p>{message}</p>
+    </Layout>
   );
 };
 
-const Exchange = (): React.JSX.Element => (
-  <Layout>
-    <Divider />
-    <Actions />
-    <Divider />
-    <ExchangeSection />
-    <Divider />
-    <Divider />
-  </Layout>
-);
-
-export default Exchange;
+export default ExchangeSection;

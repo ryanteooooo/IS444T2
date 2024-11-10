@@ -29,5 +29,6 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'import/prefer-default-export': 'off',
     'react/jsx-no-useless-fragment': 'warn',
+    'prefer-destructuring': 'off',  // Disable prefer-destructuring globally
   },
 };
