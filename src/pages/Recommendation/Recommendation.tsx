@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useAuth } from '../../AuthContext'; // Import useAuth from AuthContext
+import { useAuth } from '../../AuthContext';
 import ActivityCard from '../../components/ActivityCard/ActivityCard';
 import './Recommendation.css';
 import Actions from '../../components/Actions/Actions';
@@ -20,76 +21,109 @@ interface Activity {
 }
 
 const Recommendation: React.FC = () => {
-    const { latestCurrencyChanged, setLatestCurrencyChanged, accountID } = useAuth(); // Get latestCurrencyChanged from AuthContext
+    const { accountID, latestCurrencyChanged } = useAuth();
     const [activities, setActivities] = useState<Activity[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const activitiesPerPage = 5;
 
-    // Function to fetch the coordinates based on the currency
-    const fetchCoordinates = async (currency: string) => {
+    // Function to fetch all available activities if no exchange history
+    const fetchAllActivities = useCallback(async () => {
         try {
-            const response = await axios.get(`https://personal-6hjam0f0.outsystemscloud.com/ExchangeCurrency/rest/GeographyAPI/GetSingleGeography?Currency=${currency}`);
-            const { North: north, West: west, South: south, East: east } = response.data;
-            return { north, west, south, east };
+            const response = await axios.get(
+                'https://personal-6hjam0f0.outsystemscloud.com/AutoExchangeCurrencyLocker/rest/AmadeusActivities/GetAllActivitiesNew'
+            );
+            
+            const activityData = response.data.LocalActivitiesResponse;
+    
+            if (Array.isArray(activityData)) {
+                const allActivities = activityData.map((activity: any) => ({
+                    id: activity.Id,
+                    name: activity.Name,
+                    description: activity.Description,
+                    pictures: activity.Pictures,
+                    price: activity.Price,
+                    bookingLink: activity.BookingLink,
+                }));
+                setActivities(allActivities);
+                console.log('Fetched all activities:', allActivities);
+            } else {
+                console.warn('Expected array in activity data, got:', activityData);
+            }
         } catch (error) {
-            console.error('Error fetching geography data:', error);
-            return null;
+            console.error('Error fetching all activities:', error);
         }
-    };
+    }, []);
+    
 
-    // Function to fetch the activities based on coordinates
-    const fetchActivities = async (north: string, west: string, south: string, east: string) => {
+    // Function to fetch user-specific activities based on exchange history and coordinates
+    const fetchUserSpecificActivities = useCallback(async () => {
         try {
-            const response = await axios.get(`https://personal-6hjam0f0.outsystemscloud.com/AutoExchangeCurrencyLocker/rest/AmadeusActivities/ActivitiesNew?north=${north}&west=${west}&south=${south}&east=${east}`);
-            const fetchedActivities = response.data.data.map((activity: any) => ({
-                id: activity.id,
-                name: activity.name,
-                description: activity.description,
-                pictures: activity.pictures,
-                price: activity.price,
-                bookingLink: activity.bookingLink,
-            }));
-            setActivities(fetchedActivities);
-        } catch (error) {
-            console.error('Error fetching activities:', error);
-        }
-    };
+            if (accountID) {
+                // Fetch user coordinates to check if the user has exchanged currency
+                const coordinatesResponse = await axios.get(
+                    `https://personal-6hjam0f0.outsystemscloud.com/ExchangeCurrency/rest/UserAPI/GetSingleUserCoordinates?AccountId=${accountID}`
+                );
 
-    useEffect(() => {
-        // Function to fetch the latest currency from API if not already set in context
-        const fetchLatestCurrency = async (accountId: string) => {
-            try {
-                const response = await axios.get(`https://personal-6hjam0f0.outsystemscloud.com/ExchangeCurrency/rest/RateAPI/GetIndividualRateLock?AccountId=${accountId}`);
-                const latestTransaction = response.data[response.data.length - 1]; // Get the last entry
-                if (latestTransaction && latestTransaction.Currency) {
-                    setLatestCurrencyChanged(latestTransaction.Currency); // Update AuthContext with latest currency
-                }
-            } catch (error) {
-                console.error('Error fetching latest currency:', error);
-            }
-        };
+                if (coordinatesResponse.data.Errors) {
+                    // If error occurs (500 Internal Server Error), user has not exchanged currency
+                    console.warn('User has not exchanged currency, fetching all activities.');
+                    await fetchAllActivities();
+                } else {
+                    // If coordinates exist, user has exchanged currency, fetch activities based on location
+                    const dynamicActivitiesResponse = await axios.get(
+                        `https://personal-6hjam0f0.outsystemscloud.com/DynamicActivities/rest/DynamicActivitiesPage/DynamicActivitiesComposite?AccountId=${accountID}`
+                    );
 
-        const loadActivities = async () => {
-            // If latestCurrencyChanged is null, fetch from the API using the accountID
-            if (!latestCurrencyChanged && accountID) {
-                await fetchLatestCurrency(accountID); // Fetch the latest currency if not available
-            }
-
-            if (latestCurrencyChanged) {
-                const coordinates = await fetchCoordinates(latestCurrencyChanged);
-                if (coordinates) {
-                    const { north, west, south, east } = coordinates;
-                    await fetchActivities(north, west, south, east);
+                    if (dynamicActivitiesResponse.data && dynamicActivitiesResponse.data.data.length > 0) {
+                        const userSpecificActivities = dynamicActivitiesResponse.data.data.map((activity: any) => ({
+                            id: activity.id,
+                            name: activity.name,
+                            description: activity.shortDescription,
+                            pictures: activity.pictures,
+                            price: activity.price,
+                            bookingLink: activity.bookingLink,
+                        }));
+                        setActivities(userSpecificActivities);
+                        console.log('Fetched user-specific activities:', userSpecificActivities);
+                    } else {
+                        console.warn('No specific activities found for the user, fetching all activities.');
+                        await fetchAllActivities();
+                    }
                 }
             } else {
-                console.warn("No selected currency, skipping activities load.");
+                console.warn('Account ID is not available.');
+            }
+        } catch (error) {
+            console.error('Error fetching user-specific activities:', error);
+            await fetchAllActivities();
+        }
+    }, [accountID, fetchAllActivities]);
+
+    useEffect(() => {
+        // Fetch user-specific or all activities on component load
+        const loadActivities = async () => {
+            if (accountID) {
+                await fetchUserSpecificActivities();
+            } else {
+                console.warn('No account ID found, unable to load activities.');
             }
         };
 
         loadActivities();
-    }, [latestCurrencyChanged, setLatestCurrencyChanged, accountID]); // Now `fetchLatestCurrency` is inside `useEffect`, so it's not needed in the dependency array
+    }, [accountID, fetchUserSpecificActivities]);
 
-    // Calculate indices for slicing the activities array
+    // Watch for changes in latestCurrencyChanged and refetch activities
+    useEffect(() => {
+        // If the latest currency changes, re-fetch the activities
+        const loadActivities = async () => {
+            if (latestCurrencyChanged && accountID) {
+                await fetchUserSpecificActivities();
+            }
+        };
+        loadActivities();
+    }, [latestCurrencyChanged, accountID, fetchUserSpecificActivities]);
+
+    // Pagination logic
     const indexOfLastActivity = currentPage * activitiesPerPage;
     const indexOfFirstActivity = indexOfLastActivity - activitiesPerPage;
     const currentActivities = activities.slice(indexOfFirstActivity, indexOfLastActivity);
@@ -110,11 +144,8 @@ const Recommendation: React.FC = () => {
     return (
         <Layout>
             <Divider />
-
             <Actions />
-
             <Divider />
-            
             <h1 className="title no-select">Recommendations For You</h1>
             <div className="activity-cards-container">
                 {currentActivities.map((activity) => (
@@ -146,7 +177,6 @@ const Recommendation: React.FC = () => {
                     &#8594;
                 </button>
             </div>
-
         </Layout>
     );
 };
