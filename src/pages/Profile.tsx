@@ -17,7 +17,10 @@ const Profile = (): React.JSX.Element => {
   const [loadingTbankAccount, setLoadingTbankAccount] = useState(false);
   const [linkStatusMessage, setLinkStatusMessage] = useState<string | null>(null);
   const [topUpAmount, setTopUpAmount] = useState<number | ''>('');
-  const [selectedCurrency, setSelectedCurrency] = useState<{ CurrencyCode: string; Amount: number } | null>(null);
+  const [selectedCurrency, setSelectedCurrency] = useState<{
+    CurrencyCode: string;
+    Amount: number;
+  } | null>(null);
 
   const { accountID } = useAuth();
 
@@ -179,12 +182,12 @@ const Profile = (): React.JSX.Element => {
       <div
         onClick={() => window.history.back()}
         style={{
-          position: 'absolute',
-          top: '20px',
-          left: '20px',
-          cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          marginBottom: '10px',
+          marginTop: '10px',
         }}
         className='account-link'
       >
@@ -223,7 +226,9 @@ const Profile = (): React.JSX.Element => {
             className='flex flex-v-center account-link'
             style={{ cursor: 'pointer', color: '#fff' }}
           >
-            <span className='material-symbols-outlined' style={{ color: '#fff' }}>credit_card</span>
+            <span className='material-symbols-outlined' style={{ color: '#fff' }}>
+              credit_card
+            </span>
             Link Account to Bank
           </div>
         ) : (
@@ -232,7 +237,9 @@ const Profile = (): React.JSX.Element => {
             className='flex flex-v-center account-link'
             style={{ cursor: 'pointer', color: '#fff' }}
           >
-            <span className='material-symbols-outlined' style={{ color: '#fff' }}>account_balance_wallet</span>
+            <span className='material-symbols-outlined' style={{ color: '#fff' }}>
+              account_balance_wallet
+            </span>
             Top Up
           </div>
         )}
@@ -242,23 +249,19 @@ const Profile = (): React.JSX.Element => {
 
       <div className='account'>
         <button
-          type="button"
+          type='button'
           onClick={handleSignOut}
           className='flex flex-v-center account-link'
           style={{ cursor: 'pointer', color: '#fff' }}
         >
-          <span className='material-symbols-outlined' style={{ color: '#fff' }}>power_settings_new</span>
+          <span className='material-symbols-outlined' style={{ color: '#fff' }}>
+            power_settings_new
+          </span>
           Sign Out
         </button>
       </div>
 
       <Divider />
-
-      <footer className='center no-select'>
-        v.1.0.12
-        <br />
-        Banking Ltd.
-      </footer>
 
       <Divider />
 
@@ -270,15 +273,17 @@ const Profile = (): React.JSX.Element => {
               <p>Loading Tbank Account ID...</p>
             ) : (
               <>
-                <p style={{ color: '#000' }}>
-                  Tbank Account ID: {tbankAccountId}
-                </p>
-                <p style={{ color: linkStatusMessage === 'Successfully linked!' ? '#28a745' : '#dc3545' }}>
+                <p style={{ color: '#000' }}>Tbank Account ID: {tbankAccountId}</p>
+                <p
+                  style={{
+                    color: linkStatusMessage === 'Successfully linked!' ? '#28a745' : '#dc3545',
+                  }}
+                >
                   {linkStatusMessage}
                 </p>
               </>
             )}
-            <button type="button" onClick={toggleModal}>
+            <button type='button' onClick={toggleModal}>
               Close
             </button>
           </div>
@@ -296,12 +301,15 @@ const Profile = (): React.JSX.Element => {
                 currencies.map((currency) => (
                   <li key={currency.CurrencyCode}>
                     <button
-                      type="button"
+                      type='button'
                       onClick={() => setSelectedCurrency(currency)}
                       style={{
                         display: 'flex',
                         alignItems: 'center',
-                        backgroundColor: selectedCurrency?.CurrencyCode === currency.CurrencyCode ? '#f0f0f0' : 'transparent',
+                        backgroundColor:
+                          selectedCurrency?.CurrencyCode === currency.CurrencyCode
+                            ? '#f0f0f0'
+                            : 'transparent',
                         padding: '8px',
                         borderRadius: '4px',
                         margin: '4px 0',
@@ -321,7 +329,7 @@ const Profile = (): React.JSX.Element => {
               )}
             </ul>
 
-            <button type="button" onClick={toggleBalanceModal}>
+            <button type='button' onClick={toggleBalanceModal}>
               Close
             </button>
           </div>
@@ -339,10 +347,10 @@ const Profile = (): React.JSX.Element => {
               onChange={(e) => setTopUpAmount(parseFloat(e.target.value))}
               placeholder='Enter amount'
             />
-            <button type="button" onClick={handleTopUp}>
+            <button type='button' onClick={handleTopUp}>
               Confirm
             </button>
-            <button type="button" onClick={toggleTopUpModal}>
+            <button type='button' onClick={toggleTopUpModal}>
               Close
             </button>
           </div>
