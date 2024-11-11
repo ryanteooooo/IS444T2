@@ -1,4 +1,4 @@
-# IS444 FINTECH APPLICATION
+# XCHANGE
 
 ## Description
 A fintech application designed to provide users with smarter financial tools for managing international travel and spending. It features automated currency exchange, allowing users to set desired exchange rates and receive exchanges once their target rates are met. The app also sends personalized travel activity recommendations based on users' intended destinations, enhancing their travel experience. Additionally, users can manage their card and track spending within the app, bringing convenience and financial insights to travelers and frequent spenders alike.
