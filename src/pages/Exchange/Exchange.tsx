@@ -22,7 +22,7 @@ const ExchangeSection = (): React.JSX.Element => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [rateLocks, setRateLocks] = useState<any[]>([]);
 
-  const currencies = ['USD', 'EUR', 'GBP', 'THB'];
+  const currencies = ['USD', 'EUR', 'GBP', 'THB', 'KRW'];
 
   const fetchBalance = useCallback(async (currency: string) => {
     try {
