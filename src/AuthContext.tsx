@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 interface AuthContextType {
     accountID: string | null;
@@ -19,12 +19,42 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [accountID, setAccountID] = useState<string | null>(null);
-    const [userName, setUserName] = useState<string | null>(null);
-    const [userEmail, setUserEmail] = useState<string | null>(null);
-    const [userTbankAccountId, setTbankAccountId] = useState<string | null>(null);
-    const [userPhoneNumber, setUserPhoneNumber] = useState<string | null>(null);
-    const [latestCurrencyChanged, setLatestCurrencyChanged] = useState<string | null>(null);
+    // Load user data from localStorage
+    const storedAccountID = localStorage.getItem('accountID');
+    const storedUserName = localStorage.getItem('userName');
+    const storedUserEmail = localStorage.getItem('userEmail');
+    const storedUserTbankAccountId = localStorage.getItem('userTbankAccountId');
+    const storedUserPhoneNumber = localStorage.getItem('userPhoneNumber');
+    const storedLatestCurrencyChanged = localStorage.getItem('latestCurrencyChanged');
+
+    // Initialize state with values from localStorage, or default to null
+    const [accountID, setAccountID] = useState<string | null>(storedAccountID);
+    const [userName, setUserName] = useState<string | null>(storedUserName);
+    const [userEmail, setUserEmail] = useState<string | null>(storedUserEmail);
+    const [userTbankAccountId, setTbankAccountId] = useState<string | null>(storedUserTbankAccountId);
+    const [userPhoneNumber, setUserPhoneNumber] = useState<string | null>(storedUserPhoneNumber);
+    const [latestCurrencyChanged, setLatestCurrencyChanged] = useState<string | null>(storedLatestCurrencyChanged);
+
+    // Update localStorage whenever state changes
+    useEffect(() => {
+        if (accountID) localStorage.setItem('accountID', accountID);
+        else localStorage.removeItem('accountID');
+        
+        if (userName) localStorage.setItem('userName', userName);
+        else localStorage.removeItem('userName');
+        
+        if (userEmail) localStorage.setItem('userEmail', userEmail);
+        else localStorage.removeItem('userEmail');
+        
+        if (userTbankAccountId) localStorage.setItem('userTbankAccountId', userTbankAccountId);
+        else localStorage.removeItem('userTbankAccountId');
+        
+        if (userPhoneNumber) localStorage.setItem('userPhoneNumber', userPhoneNumber);
+        else localStorage.removeItem('userPhoneNumber');
+        
+        if (latestCurrencyChanged) localStorage.setItem('latestCurrencyChanged', latestCurrencyChanged);
+        else localStorage.removeItem('latestCurrencyChanged');
+    }, [accountID, userName, userEmail, userTbankAccountId, userPhoneNumber, latestCurrencyChanged]);
 
     const logout = () => {
         setAccountID(null);
