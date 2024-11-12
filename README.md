@@ -22,7 +22,7 @@ npm start
 
 ## Sign in details (for testing purpose)
 Email: fiona@gmail.com
-Password: fiona@123
+Password: fiona123
 
 ## Sign up details 
 In the sign up page, sign up by providing your name, email, password, and phonenumber (linked to your SMUTbank account)
