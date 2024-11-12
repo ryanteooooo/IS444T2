@@ -130,7 +130,7 @@ const ExchangeSection = (): React.JSX.Element => {
   };
 
   useEffect(() => {
-    if (activeTab === 'status') {
+    if (activeTab === 'status' && accountId) { 
       fetch(`https://personal-6hjam0f0.outsystemscloud.com/ExchangeCurrency/rest/RateAPI/GetIndividualRateLock?AccountId=${accountId}`)
         .then((response) => response.json())
         .then((data) => {
@@ -139,7 +139,7 @@ const ExchangeSection = (): React.JSX.Element => {
         })
         .catch((error) => console.error('Error fetching rate locks:', error));
     }
-  }, [activeTab]);
+  }, [activeTab, accountId]); 
 
   return (
     <div className={`exchange-section ${isLoading ? 'blur' : ''}`}>
