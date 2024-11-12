@@ -30,6 +30,7 @@ In the sign up page, sign up by providing your name, email, password, and phonen
 
 
 Select the profile icon
+
 <img width="463" alt="image" src="https://github.com/user-attachments/assets/7966809f-2576-4607-a90c-46b1e6c9ece6">
 
 
