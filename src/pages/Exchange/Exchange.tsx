@@ -131,7 +131,7 @@ const ExchangeSection = (): React.JSX.Element => {
 
   useEffect(() => {
     if (activeTab === 'status') {
-      fetch('https://personal-6hjam0f0.outsystemscloud.com/ExchangeCurrency/rest/RateAPI/GetIndividualRateLock?AccountId=13')
+      fetch('https://personal-6hjam0f0.outsystemscloud.com/ExchangeCurrency/rest/RateAPI/GetIndividualRateLock?AccountId=${accountId}')
         .then((response) => response.json())
         .then((data) => {
           console.log('Fetched rate locks:', data);
