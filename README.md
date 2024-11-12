@@ -21,8 +21,10 @@ npm start
 <a href="https://www.outsystems.com/"><img src="https://upload.wikimedia.org/wikipedia/commons/8/82/OS-logo-color_500x108.png" alt="OutSystems" height="40"/></a>
 
 ## Sign in details (for testing purpose)
+```
 Email: fiona@gmail.com
 Password: fiona123
+```
 
 ## Sign up details 
 In the sign up page, sign up by providing your name, email, password, and phonenumber (linked to your SMUTbank account)
