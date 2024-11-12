@@ -29,7 +29,7 @@ In the sign up page, sign up by providing your name, email, password, and phonen
 <img width="451" alt="image" src="https://github.com/user-attachments/assets/0b394349-70b3-49bf-ab4e-87abd48e1994">
 
 Select the profile icon
-<img width="498" alt="image" src="https://github.com/user-attachments/assets/370633b4-2ef6-453b-89e0-a6f762985cca">
+<img width="463" alt="image" src="https://github.com/user-attachments/assets/7966809f-2576-4607-a90c-46b1e6c9ece6">
 
 Select `Link account to bank` to link your account to SMUTbank
 <img width="548" alt="image" src="https://github.com/user-attachments/assets/8c2dec6b-8a99-4c95-96a4-292573bd8fb9">
