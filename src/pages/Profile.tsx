@@ -203,6 +203,7 @@ const Profile = (): React.JSX.Element => {
 
       <div className='center'>
         <h2>{userName}</h2>
+        <p>Account ID: {accountID}</p> 
       </div>
 
       <div className='balance-display' onClick={toggleBalanceModal} style={{ cursor: 'pointer' }}>
