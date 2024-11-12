@@ -18,3 +18,6 @@ npm start
 
 ## Backend 
 <a href="https://www.outsystems.com/"><img src="https://upload.wikimedia.org/wikipedia/commons/8/82/OS-logo-color_500x108.png" alt="OutSystems" height="40"/></a>
+
+## Access Deployed Version
+https://is444-t2.vercel.app/
