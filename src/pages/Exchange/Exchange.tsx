@@ -244,48 +244,52 @@ const ExchangeSection = (): React.JSX.Element => {
         )}
 
         {activeTab === 'status' && (
-          <div className='status-tab'>
-            <ul>
-              {rateLocks.map((rateLock) => (
-                <li key={rateLock.RateLockTxnId}>
-                  <div className='transaction-card'>
-                    <div className='icon'>
-                      <span className='material-symbols-outlined'>
-                        {rateLock.Exchange_Status === 'Pending' ? 'preliminary' : 'check_circle'}
-                      </span>
-                    </div>
-                    <div className='history-row'>
-                      <div className='history-col' style={{ fontWeight: 'bold' }}>
-                        <span className='label'>Last updated Date:</span>
-                        <span className='value'>{new Date(rateLock.DateTime).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
+            <div className='status-tab'>
+              {rateLocks.length === 0 ? (
+                <p className='no-transactions'>- No Transactions -</p> // Add this line
+              ) : (
+                <ul>
+                  {rateLocks.map((rateLock) => (
+                    <li key={rateLock.RateLockTxnId}>
+                      <div className='transaction-card'>
+                        <div className='icon'>
+                          <span className='material-symbols-outlined'>
+                            {rateLock.Exchange_Status === 'Pending' ? 'preliminary' : 'check_circle'}
+                          </span>
+                        </div>
+                        <div className='history-row'>
+                          <div className='history-col' style={{ fontWeight: 'bold' }}>
+                            <span className='label'>Last updated Date:</span>
+                            <span className='value'>{new Date(rateLock.DateTime).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
+                          </div>
+                        </div>
+                        <div className='history-row'>
+                          <div className='history-col'>
+                            <span className='label'>Currency:</span>
+                            <span className='value'>{rateLock.Currency}</span>
+                          </div>
+                          <div className='history-col'>
+                            <span className='label'>Rate:</span>
+                            <span className='value'>{rateLock.X_Rate}</span>
+                          </div>
+                        </div>
+                        <div className='history-row'>
+                          <div className='history-col'>
+                            <span className='label'>Amount:</span>
+                            <span className='value'>{rateLock.Amount.toFixed(2)}</span>
+                          </div>
+                          <div className='history-col'>
+                            <span className='label'>Status:</span>
+                            <span className='value'>{rateLock.Exchange_Status}</span>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    <div className='history-row'>
-                      <div className='history-col'>
-                        <span className='label'>Currency:</span>
-                        <span className='value'>{rateLock.Currency}</span>
-                      </div>
-                      <div className='history-col'>
-                        <span className='label'>Rate:</span>
-                        <span className='value'>{rateLock.X_Rate}</span>
-                      </div>
-                    </div>
-                    <div className='history-row'>
-                      <div className='history-col'>
-                        <span className='label'>Amount:</span>
-                        <span className='value'>{rateLock.Amount.toFixed(2)}</span>
-                      </div>
-                      <div className='history-col'>
-                        <span className='label'>Status:</span>
-                        <span className='value'>{rateLock.Exchange_Status}</span>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
       </div>
     </div>
   );
