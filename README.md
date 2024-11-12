@@ -26,6 +26,7 @@ Password: fiona@123
 
 ## Sign up details 
 In the sign up page, sign up by providing your name, email, password, and phonenumber (linked to your SMUTbank account)
+
 <img width="451" alt="image" src="https://github.com/user-attachments/assets/0b394349-70b3-49bf-ab4e-87abd48e1994">
 
 
@@ -35,19 +36,24 @@ Select the profile icon
 
 
 Select `Link account to bank` to link your account to SMUTbank
+
 <img width="548" alt="image" src="https://github.com/user-attachments/assets/8c2dec6b-8a99-4c95-96a4-292573bd8fb9">
 
 
 ## Features
 ### 1. In the profile page you can top up money into account
+
 Once linkage to SMUTbank is successful, top up money into your account.
 <img width="531" alt="image" src="https://github.com/user-attachments/assets/5ade50dc-7ce2-4856-a7d8-361190ba79e6">
 
 ### 2. Select 'Add Spending' to send money of your desired currency to another SMUTbank account
+
 <img width="531" alt="image" src="https://github.com/user-attachments/assets/e6e08284-be43-4fb2-9cc9-83eefe5eb189">
 
 ### 3. Select 'Exchange' to set the desired exchange rate and currency you want to exchange for.
+
 <img width="531" alt="image" src="https://github.com/user-attachments/assets/cafeec13-e343-4ef1-ab88-139ceb3ef58e">
 
 ### 4. Select 'For You' to view popular activities recommended for you.
+
 <img width="531" alt="image" src="https://github.com/user-attachments/assets/1602b8cb-b228-4f55-accf-593b60a6487c">
